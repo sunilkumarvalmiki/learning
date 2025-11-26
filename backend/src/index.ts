@@ -22,7 +22,11 @@ app.get('/health', (_req: Request, res: Response) => {
     });
 });
 
-// API routes (to be added)
+// API routes
+import documentRoutes from './routes/documents';
+
+app.use('/api/v1/documents', documentRoutes);
+
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.json({
         message: 'AI Knowledge Management System API',
@@ -30,6 +34,7 @@ app.get('/api/v1', (_req: Request, res: Response) => {
         endpoints: {
             health: '/health',
             documents: '/api/v1/documents',
+            upload: '/api/v1/documents/upload',
             search: '/api/v1/search',
         },
     });
