@@ -11,8 +11,8 @@ export const AppDataSource = new DataSource({
     database: config.postgres.database,
     synchronize: false, // Don't auto-create schema, use migrations
     logging: config.nodeEnv === 'development',
-    entities: ['src/models/**/*.ts'],
-    migrations: ['../migrations/**/*.sql'],
+    entities: [__dirname + '/../models/*.{js,ts}'],
+    migrations: [],
     subscribers: [],
 });
 
