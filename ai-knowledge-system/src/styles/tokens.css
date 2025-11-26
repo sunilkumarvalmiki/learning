@@ -1,0 +1,326 @@
+/* ===================================
+   AI Knowledge System - Design Tokens
+   Aligned with Production UI/UX Specification
+   =================================== */
+
+:root {
+  /* ===================================
+     Color System - Semantic Tokens
+     =================================== */
+
+  /* Surface colors */
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F6F8FA;
+  --surface-elevated: #FFFFFF;
+
+  /* Border colors */
+  --border-subtle: #D0D7DE;
+  --border-default: #D0D7DE;
+  --border-emphasis: #8D96A0;
+
+  /* Text colors */
+  --text-primary: #1F2328;
+  --text-secondary: #636C76;
+  --text-tertiary: #8D96A0;
+  --text-disabled: #ACB6C0;
+
+  /* Primary colors */
+  --color-primary: #0969DA;
+  --color-primary-hover: #0550AE;
+  --color-primary-active: #033D8B;
+  --color-primary-subtle: #DDF4FF;
+
+  /* Secondary colors */
+  --color-secondary: #8250DF;
+  --color-secondary-hover: #6E40C9;
+  --color-secondary-subtle: #EAD7FF;
+
+  /* Status colors */
+  --color-success: #1A7F37;
+  --color-success-subtle: #DFF6DD;
+  --color-success-emphasis: #2DA44E;
+
+  --color-warning: #9A6700;
+  --color-warning-subtle: #FFF8C5;
+  --color-warning-emphasis: #D29922;
+
+  --color-danger: #CF222E;
+  --color-danger-subtle: #FFEBE9;
+  --color-danger-emphasis: #A40E26;
+
+  --color-error: #CF222E;
+  --color-error-bg: #FFEBE9;
+
+  /* ===================================
+     Legacy token aliases (for backward compatibility)
+     =================================== */
+  --color-bg-primary: var(--surface-primary);
+  --color-bg-secondary: var(--surface-secondary);
+  --color-border: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  /* ===================================
+     Typography
+     =================================== */
+  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Monaco, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Font sizes */
+  --font-size-display: 32px;
+  --font-size-2xl: 24px;
+  --font-size-xl: 20px;
+  --font-size-lg: 18px;
+  --font-size-base: 14px;
+  --font-size-sm: 12px;
+  --font-size-xs: 11px;
+
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===================================
+     Spacing - Numeric Scale (4px base)
+     =================================== */
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+
+  /* ===================================
+     Border Radius
+     =================================== */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* ===================================
+     Shadows
+     =================================== */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(9, 105, 218, 0.3);
+
+  /* ===================================
+     Transitions
+     =================================== */
+  --transition-fast: 120ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  --transition-slower: 400ms;
+
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ===================================
+     Z-index Scale
+     =================================== */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-toast: 1500;
+
+  /* ===================================
+     Layout
+     =================================== */
+  --header-height: 56px;
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 64px;
+
+  /* Container widths */
+  --container-narrow: 800px;
+  --container-standard: 1200px;
+  --container-wide: 1600px;
+
+  /* Breakpoints (for reference in media queries) */
+  --breakpoint-mobile: 375px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1440px;
+
+  /* ===================================
+     Touch Targets (Accessibility)
+     =================================== */
+  --touch-target-min: 44px;
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+}
+
+/* ===================================
+   Dark Mode
+   =================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surface colors */
+    --surface-primary: #0D1117;
+    --surface-secondary: #161B22;
+    --surface-elevated: #21262D;
+
+    /* Border colors */
+    --border-subtle: #30363D;
+    --border-default: #30363D;
+    --border-emphasis: #636C76;
+
+    /* Text colors */
+    --text-primary: #E6EDF3;
+    --text-secondary: #8D96A0;
+    --text-tertiary: #636C76;
+    --text-disabled: #484F58;
+
+    /* Primary colors */
+    --color-primary: #4493F8;
+    --color-primary-hover: #318DF0;
+    --color-primary-active: #1F7CE8;
+    --color-primary-subtle: #0C2D6B;
+
+    /* Secondary colors */
+    --color-secondary: #A371F7;
+    --color-secondary-hover: #9466F1;
+    --color-secondary-subtle: #3E1F77;
+
+    /* Status colors */
+    --color-success: #3FB950;
+    --color-success-subtle: #033A16;
+    --color-success-emphasis: #2DA44E;
+
+    --color-warning: #D29922;
+    --color-warning-subtle: #4A2700;
+    --color-warning-emphasis: #F0B72F;
+
+    --color-danger: #F85149;
+    --color-danger-subtle: #4C0014;
+    --color-danger-emphasis: #DA3633;
+
+    --color-error: #F85149;
+    --color-error-bg: #4C0014;
+
+    /* Shadows (darker in dark mode) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    --shadow-focus: 0 0 0 3px rgba(68, 147, 248, 0.4);
+  }
+}
+
+/* ===================================
+   Global Styles
+   =================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--surface-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================================
+   Typography Elements
+   =================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+h1 {
+  font-size: var(--font-size-display);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-4);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: var(--surface-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===================================
+   Focus Styles (Accessibility)
+   =================================== */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ===================================
+   Reduced Motion (Accessibility)
+   =================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

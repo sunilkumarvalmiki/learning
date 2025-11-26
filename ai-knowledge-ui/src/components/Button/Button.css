@@ -1,0 +1,209 @@
+/* Button Component Styles */
+
+.btn {
+    /* Reset */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-normal) var(--ease-out);
+    position: relative;
+    overflow: hidden;
+
+    /* Defaults */
+    border-radius: var(--radius-md);
+
+    /* States */
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Variants */
+.btn--primary {
+    background: var(--color-primary);
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+        background: var(--color-primary-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
+    }
+}
+
+.btn--secondary {
+    background: var(--color-bg-surface-1);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-bg-surface-3);
+
+    &:hover:not(:disabled) {
+        background: var(--color-bg-surface-2);
+        border-color: var(--color-primary);
+    }
+
+    &:active:not(:disabled) {
+        transform: scale(0.98);
+    }
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--color-text-secondary);
+
+    &:hover:not(:disabled) {
+        background: var(--color-bg-surface-1);
+        color: var(--color-text-primary);
+    }
+
+    &:active:not(:disabled) {
+        transform: scale(0.98);
+    }
+}
+
+.btn--danger {
+    background: var(--color-error);
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+        background: var(--color-error-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
+    }
+}
+
+/* Sizes */
+.btn--small {
+    height: 32px;
+    padding: 0 var(--space-md);
+    font-size: var(--font-size-body-small);
+}
+
+.btn--medium {
+    height: 40px;
+    padding: 0 var(--space-lg);
+    font-size: var(--font-size-body);
+}
+
+.btn--large {
+    height: 48px;
+    padding: 0 var(--space-xl);
+    font-size: var(--font-size-body-large);
+}
+
+/* Full width */
+.btn--full-width {
+    width: 100%;
+}
+
+/* Loading state */
+.btn--loading {
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn__spinner-icon {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+.btn__spinner-circle {
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-dasharray: 50, 150;
+    stroke-dashoffset: 0;
+    animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}
+
+/* Icon spacing */
+.btn__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn--small .btn__icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn--large .btn__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Microinteraction: ripple effect (optional enhancement) */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width var(--transition-medium), height var(--transition-medium);
+}
+
+.btn:active:not(:disabled)::after {
+    width: 300px;
+    height: 300px;
+}

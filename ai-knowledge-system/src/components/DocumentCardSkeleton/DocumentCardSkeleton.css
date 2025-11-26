@@ -1,0 +1,126 @@
+/* ===================================
+   Document Card Skeleton Styles
+   =================================== */
+
+.document-card-skeleton {
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+/* Shimmer animation overlay */
+.document-card-skeleton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Skeleton elements */
+.skeleton__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.skeleton__title {
+    height: 24px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    flex: 1;
+    max-width: 70%;
+}
+
+.skeleton__badge {
+    height: 20px;
+    width: 80px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-full);
+}
+
+.skeleton__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin: var(--spacing-2) 0;
+}
+
+.skeleton__line {
+    height: 14px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-sm);
+}
+
+.skeleton__line--short {
+    width: 40%;
+}
+
+.skeleton__line--medium {
+    width: 65%;
+}
+
+.skeleton__line--long {
+    width: 90%;
+}
+
+.skeleton__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.skeleton__meta {
+    height: 12px;
+    width: 100px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-sm);
+}
+
+.skeleton__meta--small {
+    width: 60px;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .document-card-skeleton::before {
+        background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 100%);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .document-card-skeleton::before {
+        animation: none;
+    }
+}
