@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { documentAPI } from './api';
 import { Home, FileText, Tag, Settings, Upload, Search, X } from "lucide-react";
 import { Sidebar, SidebarItem } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
@@ -39,7 +39,7 @@ function App() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -75,12 +75,11 @@ function App() {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const docs = await invoke<Document[]>("get_user_documents", {
-        userId: DEMO_USER_ID,
-      });
-      setDocuments(docs);
+      const response = await documentAPI.list({ page: 1, limit: 100 });
+      setDocuments(response.documents);
     } catch (error) {
       console.error("Failed to fetch documents:", error);
+      setDocuments([]);
     } finally {
       setLoading(false);
     }
@@ -165,14 +164,20 @@ const formatDate = (dateStr: string): string => {
   return `${Math.floor(diffMins / 1440)} days ago`;
 };
 
-const handleOpenFileDialog = async () => {
+const handleOpenFileDialog = () => {
   try {
     setUploadError(null);
-    const filePath = await invoke<string | null>("open_file_dialog");
-    if (filePath) {
-      setSelectedFile(filePath);
-      setUploadModalOpen(true);
-    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.docx,.txt,.md,image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setSelectedFile(file);
+        setUploadModalOpen(true);
+      }
+    };
+    input.click();
   } catch (error) {
     console.error("Failed to open file dialog:", error);
     setUploadError("Failed to open file dialog");
@@ -186,27 +191,19 @@ const handleUpload = async () => {
   setUploadError(null);
 
   try {
-    // Call new upload_file command
-    const response = await invoke<UploadFileResponse>("upload_file", {
-      request: {
-        user_id: DEMO_USER_ID,
-        source_path: selectedFile,
-      },
+    const document = await documentAPI.upload(selectedFile, {
+      title: selectedFile.name,
     });
 
-    console.log("Upload successful!", {
-      document: response.document,
-      hash: response.file_hash,
-    });
+    console.log("Upload successful!", document);
 
-    // Refresh document list
     await fetchDocuments();
 
     setUploadModalOpen(false);
     setSelectedFile(null);
   } catch (error) {
     console.error("Failed to upload document:", error);
-    setUploadError(String(error));
+    setUploadError(error instanceof Error ? error.message : String(error));
   } finally {
     setUploading(false);
   }
@@ -391,7 +388,7 @@ return (
           <>
             <p className="modal-description">Selected file:</p>
             <div className="modal-file-preview">
-              <code className="modal-file-name">{selectedFile.split("/").pop()}</code>
+              <code className="modal-file-name">{selectedFile?.name}</code>
             </div>
 
             {uploadError && (
