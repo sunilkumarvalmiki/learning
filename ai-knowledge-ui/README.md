@@ -1,73 +1,164 @@
-# React + TypeScript + Vite
+# AI Knowledge UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![CI](https://github.com/sunilkumarvalmiki/learning/actions/workflows/ai-knowledge-ui-ci.yml/badge.svg)](https://github.com/sunilkumarvalmiki/learning/actions/workflows/ai-knowledge-ui-ci.yml)
 
-Currently, two official plugins are available:
+A modern, accessible React component library for the AI Knowledge Management System. Built with TypeScript, Vitest, and Storybook.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+✨ **11 Production-Ready Components**: Badge, Button, Card, CodeBlock, Dropdown, Input, Modal, SearchBar, Sidebar, Tabs, Tooltip  
+🎨 **Design System**: Consistent design tokens and styling  
+♿ **Accessible**: Built with accessibility best practices  
+📚 **Storybook**: Interactive component documentation  
+🧪 **Fully Tested**: 125 tests with Vitest and Playwright  
+⚡ **Fast**: Optimized build with Vite  
+📦 **TypeScript**: Full type safety
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quick Start
 
-## Expanding the ESLint configuration
+### Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Start development server
+npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start Storybook
+npm run storybook
+
+# Run tests
+npm test
+
+# Run linter
+npm run lint
+
+# Build for production
+npm run build
 ```
+
+## Components
+
+### Core Components
+
+- **Badge**: Status indicators and labels
+- **Button**: Primary, secondary, and tertiary button variants
+- **Card**: Content containers with headers and footers
+- **Input**: Form input fields with validation states
+
+### Layout Components
+
+- **Sidebar**: Collapsible navigation sidebar
+- **Tabs**: Tab navigation component
+- **Modal**: Overlay dialogs and modals
+
+### Specialty Components
+
+- **CodeBlock**: Syntax-highlighted code display
+- **SearchBar**: Search input with suggestions
+- **Dropdown**: Select menus and dropdowns
+- **Tooltip**: Contextual help tooltips
+
+## Project Structure
+
+```
+ai-knowledge-ui/
+├── src/
+│   ├── components/       # Component library
+│   │   ├── Badge/
+│   │   ├── Button/
+│   │   ├── Card/
+│   │   └── ...
+│   ├── stories/          # Storybook examples
+│   └── styles/           # Design tokens
+├── .storybook/           # Storybook configuration
+└── package.json
+```
+
+## Testing
+
+### Run All Tests
+
+```bash
+npm test
+```
+
+### Run Tests in Watch Mode
+
+```bash
+npm run test:watch
+```
+
+### View Test Coverage
+
+```bash
+npm run test:coverage
+```
+
+## Storybook
+
+View and interact with all components:
+
+```bash
+npm run storybook
+```
+
+Build Storybook for deployment:
+
+```bash
+npm run build-storybook
+```
+
+## Usage Example
+
+```tsx
+import { Button, Card, Badge } from 'ai-knowledge-ui';
+
+function MyComponent() {
+  return (
+    <Card>
+      <h2>Welcome <Badge variant="success">New</Badge></h2>
+      <Button variant="primary" onClick={() => alert('Clicked!')}>
+        Get Started
+      </Button>
+    </Card>
+  );
+}
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run Vitest tests |
+| `npm run storybook` | Start Storybook |
+| `npm run build-storybook` | Build Storybook |
+
+## Tech Stack
+
+- **React 19.2.0**: UI framework
+- **TypeScript 5.9.3**: Type safety
+- **Vite 7.2.4**: Build tool
+- **Vitest 4.0.14**: Testing framework
+- **Storybook 10.0.8**: Component documentation
+- **Playwright**: Browser testing
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Add tests for new components
+3. Ensure all tests pass: `npm test`
+4. Update Storybook stories
+5. Submit a pull request
+
+## License
+
+See the [LICENSE](../LICENSE) file for details.

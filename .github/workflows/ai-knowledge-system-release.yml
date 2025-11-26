@@ -1,0 +1,95 @@
+name: AI Knowledge System - Release Build
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+
+jobs:
+    build-tauri:
+        name: Build Tauri App - ${{ matrix.platform }}
+        runs-on: ${{ matrix.platform }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                platform: [ubuntu-22.04, macos-latest, windows-latest]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "pnpm"
+                  cache-dependency-path: "ai-knowledge-system/pnpm-lock.yaml"
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Install Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  override: true
+
+            - name: Install Linux dependencies
+              if: matrix.platform == 'ubuntu-22.04'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    libgtk-3-dev \
+                    libayatana-appindicator3-dev \
+                    librsvg2-dev \
+                    libwebkit2gtk-4.1-dev
+
+            - name: Install frontend dependencies
+              working-directory: ai-knowledge-system
+              run: pnpm install
+
+            - name: Build Tauri app
+              uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                  APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+                  APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                  APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+                  APPLE_ID: ${{ secrets.APPLE_ID }}
+                  APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+              with:
+                  projectPath: ai-knowledge-system
+                  tagName: ${{ github.ref_name }}
+                  releaseName: "AI Knowledge System v__VERSION__"
+                  releaseBody: |
+                      ## What's New
+
+                      See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
+
+                      ## Installation
+
+                      ### Windows
+                      Download and run the `.exe` installer.
+
+                      ### macOS
+                      Download the `.dmg` file, open it, and drag the app to Applications.
+
+                      ### Linux
+                      - **Ubuntu/Debian**: Download `.deb` and install with `sudo dpkg -i *.deb`
+                      - **AppImage**: Download `.AppImage`, make executable with `chmod +x`, and run
+                  releaseDraft: true
+                  prerelease: false
+                  args: --verbose
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: tauri-app-${{ matrix.platform }}
+                  path: |
+                      ai-knowledge-system/src-tauri/target/release/bundle/
+                  retention-days: 30
