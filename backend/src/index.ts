@@ -24,8 +24,10 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API routes
 import documentRoutes from './routes/documents';
+import searchRoutes from './routes/search';
 
 app.use('/api/v1/documents', documentRoutes);
+app.use('/api/v1/search', searchRoutes);
 
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.json({
@@ -35,7 +37,10 @@ app.get('/api/v1', (_req: Request, res: Response) => {
             health: '/health',
             documents: '/api/v1/documents',
             upload: '/api/v1/documents/upload',
-            search: '/api/v1/search',
+            search: '/api/v1/search?q=query',
+            searchSemantic: '/api/v1/search/semantic?q=query',
+            searchHybrid: '/api/v1/search/hybrid?q=query',
+            suggestions: '/api/v1/search/suggestions?q=partial',
         },
     });
 });
