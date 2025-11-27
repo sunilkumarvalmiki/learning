@@ -1,0 +1,7 @@
+# Use official pgvector-enabled PostgreSQL image
+FROM ankane/pgvector:v0.5.1
+
+# Set default environment variables
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_DB=knowledge_db

@@ -1,9 +1,12 @@
 version: "3.8"
 
 services:
-  # PostgreSQL - Main relational database
+  # PostgreSQL - Main relational database (with pgvector)
   postgres:
-    image: postgres:15-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    image: knowledge-postgres:pgvector
     container_name: knowledge-postgres
     environment:
       POSTGRES_USER: postgres

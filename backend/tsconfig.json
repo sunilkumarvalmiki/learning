@@ -14,11 +14,11 @@
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "types": [
             "node",
             "jest"
