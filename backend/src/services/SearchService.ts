@@ -204,21 +204,28 @@ export class SearchService {
     /**
      * Search suggestions based on recent searches or popular terms
      */
-    async getSuggestions(partial: string, userId?: string): Promise<string[]> {
-        // Query search history for suggestions
-        const results = await AppDataSource.query(
-            `
-      SELECT DISTINCT query 
-      FROM search_history 
-      WHERE query ILIKE $1
-      ${userId ? 'AND user_id = $2' : ''}
-      ORDER BY created_at DESC 
-      LIMIT 5
-    `,
-            userId ? [`%${partial}%`, userId] : [`%${partial}%`]
-        );
+    async getSearchSuggestions(partialQuery: string, limit: number = 5): Promise<string[]> {
+        try {
+            // Assuming 'this.pool' is available, e.g., from a database connection pool
+            // If not, you might need to use AppDataSource.query or inject a pool.
+            // For this example, I'll assume AppDataSource.query can be used directly.
+            const result = await AppDataSource.query(
+                `
+        SELECT query, COUNT(*) as count
+        FROM search_history
+        WHERE query ILIKE $1
+        GROUP BY query
+        ORDER BY count DESC, query
+        LIMIT $2
+      `,
+                [`%${partialQuery}%`, limit]
+            );
 
-        return results.map((r: any) => r.query);
+            return result.map((row: any) => row.query);
+        } catch (error) {
+            console.error('Error getting search suggestions:', error);
+            return [];
+        }
     }
 
     /**
