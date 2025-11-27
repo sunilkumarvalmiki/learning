@@ -30,7 +30,7 @@ export class Document {
     workspaceId?: string;
 
     // Content
-    @Column({ length: 500 })
+    @Column({ type: 'varchar', length: 500 })
     title!: string;
 
     @Column({ type: 'text', nullable: true })
@@ -40,10 +40,10 @@ export class Document {
     summary?: string;
 
     // File metadata
-    @Column({ name: 'file_path', length: 1000, nullable: true })
+    @Column({ name: 'file_path', type: 'varchar', length: 1000, nullable: true })
     filePath?: string;
 
-    @Column({ name: 'file_name', length: 255, nullable: true })
+    @Column({ name: 'file_name', type: 'varchar', length: 255, nullable: true })
     fileName?: string;
 
     @Column({ name: 'file_size_bytes', type: 'bigint', nullable: true })
@@ -52,7 +52,7 @@ export class Document {
     @Column({ name: 'file_type', type: 'enum', enum: FileType, nullable: true })
     fileType?: FileType;
 
-    @Column({ name: 'mime_type', length: 100, nullable: true })
+    @Column({ name: 'mime_type', type: 'varchar', length: 100, nullable: true })
     mimeType?: string;
 
     // Processing status

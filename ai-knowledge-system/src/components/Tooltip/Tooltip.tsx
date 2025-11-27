@@ -31,7 +31,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     delay = 200,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
-    const timeoutRef = useRef<NodeJS.Timeout>();
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleMouseEnter = () => {
         timeoutRef.current = setTimeout(() => {
@@ -72,7 +72,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         >
             {React.cloneElement(children, {
                 'aria-describedby': isVisible ? 'tooltip-content' : undefined,
-            })}
+            } as React.HTMLAttributes<HTMLElement>)}
             {isVisible && (
                 <div
                     id="tooltip-content"

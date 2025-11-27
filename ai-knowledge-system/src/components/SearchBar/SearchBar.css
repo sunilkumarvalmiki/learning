@@ -1,192 +1,246 @@
-/* SearchBar Component Styles */
+/* ===================================
+   SearchBar Component - Jira Style
+   =================================== */
 
 .search-bar {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    width: 100%;
-    max-width: 600px;
-    height: 44px;
-    padding: 0 var(--space-md);
-    background: var(--color-bg-surface-1);
-    border: 1px solid var(--color-bg-surface-3);
-    border-radius: var(--radius-lg);
-    transition: all var(--transition-normal) var(--ease-out);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  max-width: 400px;
+  min-width: 200px;
+  height: 36px;
+  padding: 0 var(--space-150);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) var(--ease-default);
+}
+
+.search-bar:hover {
+  border-color: var(--border-emphasis);
 }
 
 .search-bar:focus-within {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-brand-accent);
 }
 
 .search-bar__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-tertiary);
-    flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
 }
 
 .search-bar__icon svg {
-    width: 20px;
-    height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .search-bar__input {
-    flex: 1;
-    height: 100%;
-    border: none;
-    background: transparent;
-    color: var(--color-text-primary);
-    font-family: var(--font-primary);
-    font-size: var(--font-size-body);
-    outline: none;
-    min-width: 0;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  outline: none;
+  min-width: 0;
 }
 
 .search-bar__input::placeholder {
-    color: var(--color-text-tertiary);
+  color: var(--text-disabled);
 }
 
 .search-bar__input::-webkit-search-cancel-button {
-    display: none;
+  display: none;
 }
 
 .search-bar__shortcut {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  flex-shrink: 0;
 }
 
 .search-bar__shortcut kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    background: var(--color-bg-surface-2);
-    border: 1px solid var(--color-bg-surface-3);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-tertiary);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-caption);
-    font-weight: 500;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 var(--space-050);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
 }
 
 .search-bar__clear {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--color-text-tertiary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .search-bar__clear:hover {
-    background: var(--color-bg-surface-2);
-    color: var(--color-text-primary);
+  background: var(--surface-hovered);
+  color: var(--text-primary);
 }
 
 .search-bar__clear svg {
-    width: 16px;
-    height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
-/* Modal Styles */
+/* Spinner for loading state */
+.search-bar__spinner {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===================================
+   Modal Styles
+   =================================== */
+
 .search-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 20vh var(--space-lg) var(--space-lg);
-    z-index: var(--z-modal);
-    animation: modal-overlay-in var(--transition-normal) var(--ease-out);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(9, 30, 66, 0.54);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 15vh var(--space-300) var(--space-300);
+  z-index: var(--z-modal);
+  animation: modal-overlay-in var(--transition-base) var(--ease-out);
 }
 
 @keyframes modal-overlay-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .search-modal {
-    width: 100%;
-    max-width: 600px;
-    background: var(--color-bg-surface-1);
-    border: 1px solid var(--color-bg-surface-3);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
-    padding: var(--space-lg);
-    animation: search-modal-in var(--transition-normal) var(--ease-out);
+  width: 100%;
+  max-width: 560px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-200);
+  animation: search-modal-in var(--transition-base) var(--ease-out);
 }
 
 @keyframes search-modal-in {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .search-modal .search-bar {
-    max-width: none;
+  max-width: none;
+  height: 44px;
 }
 
 .search-modal__hint {
-    margin-top: var(--space-md);
-    font-size: var(--font-size-caption);
-    color: var(--color-text-tertiary);
-    text-align: center;
+  margin-top: var(--space-150);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  text-align: center;
 }
 
 .search-modal__hint kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 4px;
-    background: var(--color-bg-surface-2);
-    border: 1px solid var(--color-bg-surface-3);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-050);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .search-bar__shortcut {
-        display: none;
-    }
+/* ===================================
+   Responsive
+   =================================== */
 
-    .search-modal-overlay {
-        padding: var(--space-lg);
-        align-items: flex-start;
-    }
+@media (max-width: 768px) {
+  .search-bar {
+    max-width: 100%;
+    min-width: 150px;
+  }
+
+  .search-bar__shortcut {
+    display: none;
+  }
+
+  .search-modal-overlay {
+    padding: var(--space-200);
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar {
+    height: 32px;
+    padding: 0 var(--space-100);
+  }
+
+  .search-bar__input {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ===================================
+   Dark Mode
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+  .search-modal-overlay {
+    background: rgba(0, 0, 0, 0.6);
+  }
 }

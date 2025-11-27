@@ -1,7 +1,5 @@
-```typescript
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
 import './Modal.css';
 
 export type ModalSize = 'small' | 'medium' | 'large' | 'fullscreen';
@@ -31,23 +29,6 @@ export interface ModalProps {
 
 /**
  * Modal dialog component with portal rendering
- * 
- * @example
- * ```tsx
-    * <Modal
- * isOpen={ isOpen }
- * onClose={ () => setIsOpen(false) }
- * title="Settings"
-    * footer={
- * <>
-        *       <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-        *       <Button variant="primary" onClick={onSave}>Save</Button>
-        *     </>
-        *   }
- * >
- * Modal content goes here
-    * </Modal >
- * ```
  */
 export const Modal: React.FC<ModalProps> = ({
     isOpen,
@@ -61,8 +42,8 @@ export const Modal: React.FC<ModalProps> = ({
     showCloseButton = true,
     className = '',
 }) => {
-    // Trap focus within modal for accessibility
-    const trapRef = useFocusTrap(isOpen);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const previousActiveElement = useRef<HTMLElement | null>(null);
 
     // Handle Escape key
     useEffect(() => {
@@ -141,19 +122,21 @@ export const Modal: React.FC<ModalProps> = ({
 
     const modalClasses = [
         'modal',
-        `modal--${ size } `,
+        `modal--${size}`,
         className,
     ]
         .filter(Boolean)
         .join(' ');
 
     const modalContent = (
-        <div className="modal-overlay" onClick={closeOnOverlayClick ? onClose : undefined}>
+        <div
+            className="modal-overlay"
+            onClick={closeOnBackdrop ? onClose : undefined}
+        >
             <div
                 ref={modalRef}
                 className={modalClasses}
                 onClick={(e) => e.stopPropagation()}
-                ref={trapRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={title ? 'modal-title' : undefined}
@@ -164,15 +147,18 @@ export const Modal: React.FC<ModalProps> = ({
                             {title}
                         </h2>
                     )}
-                    <button
-                        className="modal__close"
-                        onClick={onClose}
-                        aria-label="Close modal"
-                    >
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    {showCloseButton && (
+                        <button
+                            type="button"
+                            className="modal__close"
+                            onClick={onClose}
+                            aria-label="Close modal"
+                        >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
 
                 <div className="modal__body">{children}</div>

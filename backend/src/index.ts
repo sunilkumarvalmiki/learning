@@ -24,9 +24,11 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 // API routes
+import authRoutes from './routes/auth';
 import documentRoutes from './routes/documents';
 import searchRoutes from './routes/search';
 
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/documents', documentRoutes);
 app.use('/api/v1/search', searchRoutes);
 
@@ -36,6 +38,12 @@ app.get('/api/v1', (_req: Request, res: Response) => {
         version: '1.0.0',
         endpoints: {
             health: '/health',
+            auth: {
+                register: '/api/v1/auth/register',
+                login: '/api/v1/auth/login',
+                me: '/api/v1/auth/me',
+                profile: '/api/v1/auth/profile',
+            },
             documents: '/api/v1/documents',
             upload: '/api/v1/documents/upload',
             search: '/api/v1/search?q=query',

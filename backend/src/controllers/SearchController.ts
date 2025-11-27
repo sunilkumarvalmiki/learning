@@ -19,11 +19,15 @@ export class SearchController {
                 });
             }
 
+            const startTime = Date.now();
+
             const results = await searchService.fullTextSearch(q, {
                 limit: limit ? parseInt(limit as string) : 20,
                 offset: offset ? parseInt(offset as string) : 0,
                 userId: userId as string,
             });
+
+            const tookMs = Date.now() - startTime;
 
             // Log search
             if (userId) {
@@ -40,7 +44,7 @@ export class SearchController {
                 type: 'full-text',
                 results: results.results,
                 total: results.total,
-                took_ms: 0, // TODO: Add timing
+                took_ms: tookMs,
             });
         } catch (error) {
             next(error);
@@ -62,11 +66,15 @@ export class SearchController {
                 });
             }
 
+            const startTime = Date.now();
+
             const results = await searchService.semanticSearch(q, {
                 limit: limit ? parseInt(limit as string) : 20,
                 offset: offset ? parseInt(offset as string) : 0,
                 userId: userId as string,
             });
+
+            const tookMs = Date.now() - startTime;
 
             // Log search
             if (userId) {
@@ -83,6 +91,7 @@ export class SearchController {
                 type: 'semantic',
                 results: results.results,
                 total: results.total,
+                took_ms: tookMs,
                 note: results.total === 0 ? 'Semantic search requires document embeddings to be generated first' : undefined,
             });
         } catch (error) {
@@ -105,11 +114,15 @@ export class SearchController {
                 });
             }
 
+            const startTime = Date.now();
+
             const results = await searchService.hybridSearch(q, {
                 limit: limit ? parseInt(limit as string) : 20,
                 offset: offset ? parseInt(offset as string) : 0,
                 userId: userId as string,
             });
+
+            const tookMs = Date.now() - startTime;
 
             // Log search
             if (userId) {
@@ -126,6 +139,7 @@ export class SearchController {
                 type: 'hybrid',
                 results: results.results,
                 total: results.total,
+                took_ms: tookMs,
             });
         } catch (error) {
             next(error);
@@ -147,7 +161,7 @@ export class SearchController {
                 });
             }
 
-            const suggestions = await searchService.getSuggestions(q, userId as string);
+            const suggestions = await searchService.getSearchSuggestions(q);
 
             res.json({
                 suggestions,

@@ -53,6 +53,11 @@ interface Config {
 
     // Logging
     logLevel: string;
+
+    // Hugging Face (optional - free tier works without key)
+    huggingface?: {
+        apiKey?: string;
+    };
 }
 
 const config: Config = {
@@ -98,6 +103,10 @@ const config: Config = {
     },
 
     logLevel: process.env.LOG_LEVEL || 'info',
+
+    huggingface: process.env.HF_TOKEN ? {
+        apiKey: process.env.HF_TOKEN,
+    } : undefined,
 };
 
 export default config;

@@ -1,5 +1,6 @@
 /* ===================================
    AI Knowledge System - Main Styles
+   Jira-Inspired Professional Design
    =================================== */
 
 /* Import design tokens */
@@ -13,217 +14,704 @@
   display: grid;
   grid-template-columns: auto 1fr;
   height: 100vh;
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--surface-secondary);
 }
 
 /* ===================================
-   Header
+   Header - Jira Style
    =================================== */
 
 .app-header {
-  background: linear-gradient(135deg,
-      var(--color-bg-primary) 0%,
-      var(--color-bg-secondary) 100%);
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-6) var(--spacing-8);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--surface-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-200) var(--space-300);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
 }
 
 .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-6);
+  gap: var(--space-300);
+  width: 100%;
+  max-width: var(--container-wide);
 }
 
 .page-title {
   margin: 0;
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg,
-      var(--color-text-primary),
-      var(--color-primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-025);
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: var(--space-100);
 }
 
 /* ===================================
-   Sidebar
+   Breadcrumb - Jira Style
    =================================== */
 
-.sidebar-header {
-  padding: var(--spacing-4);
-  border-bottom: 1px solid var(--color-border);
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-200);
 }
 
-.sidebar-title {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+.breadcrumb-item {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.sidebar-footer {
-  padding: var(--spacing-4);
-  border-top: 1px solid var(--color-border);
+.breadcrumb-item:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.breadcrumb-separator {
+  color: var(--text-tertiary);
+}
+
+.breadcrumb-current {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
 /* ===================================
-   Content Area
+   Content Area - Jira Layout
    =================================== */
 
 .content-area {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-8);
+  padding: var(--space-300);
+  background: var(--surface-secondary);
+}
+
+.content-wrapper {
+  max-width: var(--container-standard);
+  margin: 0 auto;
+}
+
+/* Page header within content */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-300);
+  padding-bottom: var(--space-200);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.page-header-content {
+  flex: 1;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: var(--space-100);
 }
 
 /* ===================================
-   Document Grid
+   Document Grid - Jira Board Style
    =================================== */
+
+.documents-section {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.documents-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-200) var(--space-200);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.documents-section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+}
+
+.documents-count {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-normal);
+  background: var(--surface-sunken);
+  padding: var(--space-025) var(--space-100);
+  border-radius: var(--radius-full);
+}
 
 .documents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-6);
-  margin-top: var(--spacing-6);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-200);
+  padding: var(--space-200);
 }
 
-.documents-grid>* {
-  transition: all 0.2s ease;
+/* List view alternative */
+.documents-list {
+  display: flex;
+  flex-direction: column;
 }
 
-.documents-grid>*:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.documents-list-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-200);
+  padding: var(--space-150) var(--space-200);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  transition: background var(--transition-fast);
+}
+
+.documents-list-item:hover {
+  background: var(--surface-hovered);
+}
+
+.documents-list-item:last-child {
+  border-bottom: none;
+}
+
+/* ===================================
+   Document Card - Jira Issue Style
+   =================================== */
+
+.document-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-200);
+  transition: all var(--transition-fast) var(--ease-default);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-height: 140px;
+}
+
+.document-card:hover {
+  background: var(--surface-hovered);
+  border-color: var(--border-emphasis);
+  box-shadow: var(--shadow-sm);
+}
+
+.document-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .document-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  gap: var(--spacing-3);
+  align-items: flex-start;
+  gap: var(--space-100);
+  margin-bottom: var(--space-100);
+}
+
+.document-card-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .document-card-title {
   margin: 0;
   font-size: var(--font-size-base);
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: var(--line-height-tight);
 }
 
 .document-card-body {
-  display: flex;
-  gap: var(--spacing-4);
+  flex: 1;
+  margin-bottom: var(--space-150);
+}
+
+.document-card-preview {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.document-card-footer {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-100);
+  padding-top: var(--space-150);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.document-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
 }
 
 .document-meta-separator {
-  color: var(--color-text-tertiary);
+  color: var(--text-disabled);
+}
+
+.document-card-actions {
+  display: flex;
+  gap: var(--space-050);
 }
 
 /* ===================================
-   Empty State
+   Status Indicators - Jira Lozenges
+   =================================== */
+
+.status-lozenge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-025) var(--space-100);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-lozenge--default {
+  background: var(--neutral-40);
+  color: var(--neutral-600);
+}
+
+.status-lozenge--processing {
+  background: var(--color-processing-subtle);
+  color: var(--color-processing);
+}
+
+.status-lozenge--success {
+  background: var(--color-success-subtle);
+  color: var(--color-success-emphasis);
+}
+
+.status-lozenge--warning {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning-emphasis);
+}
+
+.status-lozenge--error {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-emphasis);
+}
+
+/* ===================================
+   Empty State - Jira Style
    =================================== */
 
 .empty-state {
-  padding: var(--spacing-12) var(--spacing-8);
+  padding: var(--space-600) var(--space-300);
   text-align: center;
-  max-width: 500px;
+  max-width: 400px;
   margin: 0 auto;
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-300);
+  color: var(--neutral-60);
 }
 
 .empty-state-title {
   font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-3);
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  margin: 0 0 var(--space-100);
+  color: var(--text-primary);
 }
 
 .empty-state-description {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-6);
-  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-300);
+  line-height: var(--line-height-relaxed);
 }
 
-.empty-state-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto var(--spacing-6);
-  opacity: 0.3;
-  color: var(--color-text-tertiary);
+.empty-state-action {
+  display: inline-flex;
 }
 
 /* ===================================
-   Loading State
+   Loading State - Jira Skeleton
    =================================== */
 
 .loading-state {
-  padding: var(--spacing-8);
+  padding: var(--space-400);
   text-align: center;
-  color: var(--color-text-secondary);
 }
 
-/* ===================================
-   Modal
-   =================================== */
-
-.modal-content {
-  padding: var(--spacing-6);
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto var(--space-200);
 }
 
-.modal-description {
-  margin-bottom: var(--spacing-4);
-  color: var(--color-text-secondary);
+.loading-text {
+  color: var(--text-secondary);
   font-size: var(--font-size-sm);
 }
 
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 0%,
+    var(--surface-hovered) 50%,
+    var(--surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: var(--space-100);
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 60%;
+  margin-bottom: var(--space-150);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ===================================
+   Modal - Jira Dialog Style
+   =================================== */
+
+.modal-content {
+  padding: var(--space-300);
+}
+
+.modal-description {
+  margin-bottom: var(--space-200);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
 .modal-file-preview {
-  padding: var(--spacing-4);
-  background: var(--color-bg-secondary);
+  padding: var(--space-200);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-6);
-  word-break: break-all;
+  margin-bottom: var(--space-300);
 }
 
 .modal-file-name {
   font-size: var(--font-size-sm);
-  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.modal-file-size {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-050);
 }
 
 .modal-error {
-  padding: var(--spacing-4);
+  padding: var(--space-200);
   background: var(--color-error-bg);
   color: var(--color-error);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--space-300);
   font-size: var(--font-size-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-100);
 }
 
 .modal-actions {
   display: flex;
-  gap: var(--spacing-4);
+  gap: var(--space-100);
   justify-content: flex-end;
+  padding-top: var(--space-200);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-200);
+}
+
+/* ===================================
+   Form Elements - Jira Style
+   =================================== */
+
+.form-group {
+  margin-bottom: var(--space-200);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-050);
+}
+
+.form-label-optional {
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-100) var(--space-150);
+  font-size: var(--font-size-base);
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:hover {
+  border-color: var(--border-emphasis);
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.form-input::placeholder {
+  color: var(--text-disabled);
+}
+
+.form-input--error {
+  border-color: var(--color-error);
+}
+
+.form-helper {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-050);
+}
+
+.form-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  margin-top: var(--space-050);
+}
+
+/* ===================================
+   Buttons - Jira Style
+   =================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-100);
+  padding: 0 var(--space-150);
+  height: 32px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-primary);
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--ease-default);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.btn--secondary:hover {
+  background: var(--surface-hovered);
+}
+
+.btn--subtle {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn--subtle:hover {
+  background: var(--surface-hovered);
+  color: var(--text-primary);
+}
+
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--text-inverse);
+}
+
+.btn--danger:hover {
+  background: var(--color-danger-emphasis);
+}
+
+.btn--icon {
+  width: 32px;
+  padding: 0;
+}
+
+.btn--sm {
+  height: 24px;
+  padding: 0 var(--space-100);
+  font-size: var(--font-size-sm);
+}
+
+.btn--lg {
+  height: 40px;
+  padding: 0 var(--space-200);
+  font-size: var(--font-size-lg);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===================================
+   Search Bar - Jira Style
+   =================================== */
+
+.search-container {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-150);
+  width: 16px;
+  height: 16px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--space-100) var(--space-150);
+  padding-left: var(--space-400);
+  font-size: var(--font-size-base);
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.search-input:hover {
+  border-color: var(--border-emphasis);
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--text-disabled);
+}
+
+.search-clear {
+  position: absolute;
+  right: var(--space-100);
+  background: transparent;
+  border: none;
+  padding: var(--space-050);
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-hovered);
+}
+
+.search-bar__spinner {
+  animation: spin 1s linear infinite;
 }
 
 /* ===================================
@@ -231,23 +719,73 @@
    =================================== */
 
 .view-page {
-  padding: var(--spacing-8);
+  padding: var(--space-300);
 }
 
 .view-page-title {
   font-size: var(--font-size-2xl);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-100);
+  color: var(--text-primary);
 }
 
 .view-page-description {
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  margin-bottom: var(--spacing-6);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-300);
 }
 
 .view-page-actions {
-  margin-top: var(--spacing-6);
+  margin-top: var(--space-300);
+}
+
+/* ===================================
+   Welcome Page - Centered Layout
+   =================================== */
+
+.welcome-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--space-300);
+}
+
+.welcome-content {
+  text-align: center;
+  max-width: 500px;
+}
+
+.welcome-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--space-300);
+  background: var(--color-primary-subtle);
+  border-radius: var(--radius-xl);
+  color: var(--color-primary);
+}
+
+.welcome-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-150);
+  color: var(--text-primary);
+}
+
+.welcome-description {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-300);
+}
+
+.welcome-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-150);
 }
 
 /* ===================================
@@ -256,7 +794,7 @@
 
 .flex-row {
   display: flex;
-  gap: var(--spacing-4);
+  gap: var(--space-200);
 }
 
 .flex-center {
@@ -282,24 +820,33 @@
 }
 
 .text-secondary {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .text-muted {
-  color: var(--color-text-tertiary);
+  color: var(--text-tertiary);
 }
 
-.mb-4 {
-  margin-bottom: var(--spacing-4);
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mb-6 {
-  margin-bottom: var(--spacing-6);
-}
+.mb-1 { margin-bottom: var(--space-100); }
+.mb-2 { margin-bottom: var(--space-200); }
+.mb-3 { margin-bottom: var(--space-300); }
+.mb-4 { margin-bottom: var(--space-400); }
 
-.mt-6 {
-  margin-top: var(--spacing-6);
-}
+.mt-1 { margin-top: var(--space-100); }
+.mt-2 { margin-top: var(--space-200); }
+.mt-3 { margin-top: var(--space-300); }
+.mt-4 { margin-top: var(--space-400); }
+
+.p-1 { padding: var(--space-100); }
+.p-2 { padding: var(--space-200); }
+.p-3 { padding: var(--space-300); }
+.p-4 { padding: var(--space-400); }
 
 /* ===================================
    Accessibility Utilities
@@ -311,8 +858,8 @@
   top: -40px;
   left: 0;
   background: var(--color-primary);
-  color: white;
-  padding: var(--spacing-2) var(--spacing-4);
+  color: var(--text-inverse);
+  padding: var(--space-100) var(--space-200);
   text-decoration: none;
   border-radius: var(--radius-md);
   z-index: var(--z-toast);
@@ -320,8 +867,21 @@
 }
 
 .skip-link:focus {
-  top: var(--spacing-2);
-  left: var(--spacing-2);
+  top: var(--space-100);
+  left: var(--space-100);
+}
+
+/* Visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Touch Target Utilities */
@@ -330,80 +890,299 @@
   min-height: var(--touch-target-min);
 }
 
-.touch-target-inline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--touch-target-min);
-  min-height: var(--touch-target-min);
-}
+/* ===================================
+   Toast Notifications - Jira Style
+   =================================== */
 
-/* Ensure all interactive elements meet minimum touch target */
-button:not(.btn),
-a,
-input,
-select,
-textarea,
-[role="button"],
-[role="link"] {
-  min-height: var(--touch-target-min);
-}
-
-/* Toast Notifications */
-.toast {
+.toast-container {
   position: fixed;
-  top: var(--spacing-4);
-  right: var(--spacing-4);
-  padding: var(--spacing-4) var(--spacing-6);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  bottom: var(--space-300);
+  right: var(--space-300);
   z-index: var(--z-toast);
-  animation: slideInRight 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+}
+
+.toast {
+  padding: var(--space-200) var(--space-300);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--space-150);
   max-width: 400px;
+  animation: slideInUp 0.3s var(--ease-out);
 }
 
 .toast--success {
   background: var(--color-success);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .toast--error {
   background: var(--color-danger);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .toast--info {
-  background: var(--color-primary);
-  color: white;
+  background: var(--color-info);
+  color: var(--text-inverse);
 }
 
-@keyframes slideInRight {
+.toast--warning {
+  background: var(--color-warning);
+  color: var(--neutral-900);
+}
+
+.toast-message {
+  flex: 1;
+  font-size: var(--font-size-sm);
+}
+
+.toast-dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+  padding: var(--space-050);
+  border-radius: var(--radius-sm);
+}
+
+.toast-dismiss:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideInUp {
   from {
-    transform: translateX(400px);
+    transform: translateY(100px);
     opacity: 0;
   }
-
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
+
+/* ===================================
+   Dropdown Menu - Jira Style
+   =================================== */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-050);
+  min-width: 200px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  padding: var(--space-100) var(--space-150);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background: var(--surface-hovered);
+}
+
+.dropdown-item--danger {
+  color: var(--color-danger);
+}
+
+.dropdown-item--danger:hover {
+  background: var(--color-danger-subtle);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-050) 0;
+}
+
+/* ===================================
+   Animations
+   =================================== */
 
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
 }
 
-.search-bar__spinner {
-  animation: spin 1s linear infinite;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s var(--ease-out);
+}
+
+/* ===================================
+   Responsive Design - Mobile First
+   =================================== */
+
+/* Tablet and below */
+@media (max-width: 768px) {
+  .app-container {
+    grid-template-columns: 1fr;
+  }
+
+  .content-area {
+    padding: var(--space-200);
+  }
+
+  .documents-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-150);
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-200);
+  }
+
+  .header-actions {
+    flex-wrap: wrap;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: var(--space-200);
+  }
+
+  .page-header-actions {
+    width: 100%;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile small */
+@media (max-width: 480px) {
+  .app-header {
+    padding: var(--space-150) var(--space-200);
+  }
+
+  .page-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .content-area {
+    padding: var(--space-150);
+  }
+
+  .documents-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-100);
+  }
+
+  .document-card {
+    min-height: auto;
+    padding: var(--space-150);
+  }
+
+  .empty-state {
+    padding: var(--space-300) var(--space-200);
+  }
+}
+
+/* Large screens */
+@media (min-width: 1280px) {
+  .documents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+/* ===================================
+   Dark Mode Adjustments
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+  .document-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .search-input:focus {
+    box-shadow: 0 0 0 2px var(--color-brand-accent);
+  }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+
+@media print {
+  .sidebar,
+  .app-header,
+  .header-actions,
+  .toast-container {
+    display: none !important;
+  }
+
+  .app-container {
+    display: block;
+  }
+
+  .content-area {
+    padding: 0;
+  }
+
+  .documents-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-200);
+  }
+
+  .document-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
 }
 
 /* ===================================
@@ -416,109 +1195,22 @@ textarea,
   justify-content: center;
 }
 
-.icon-small {
-  width: 16px;
-  height: 16px;
+.icon-sm {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
 }
 
-.icon-medium {
-  width: 20px;
-  height: 20px;
+.icon-md {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
 }
 
-.icon-large {
-  width: 24px;
-  height: 24px;
+.icon-lg {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 
-/* ===================================
-   Animations
-   =================================== */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* ===================================
-   Responsive Design
-   =================================== */
-
-@media (max-width: 768px) {
-  .documents-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-actions {
-    flex-direction: column;
-  }
-
-  .app-header {
-    padding: var(--spacing-4);
-  }
-
-  .content-area {
-    padding: var(--spacing-4);
-  }
-}
-
-@media (max-width: 480px) {
-  .page-title {
-    font-size: var(--font-size-xl);
-  }
-
-  .documents-grid {
-    gap: var(--spacing-4);
-  }
-}
-
-/* ===================================
-   Dark Mode Adjustments
-   =================================== */
-
-@media (prefers-color-scheme: dark) {
-  .app-header {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
-
-  .documents-grid>*:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
-}
-
-/* ===================================
-   Print Styles
-   =================================== */
-
-@media print {
-
-  .sidebar,
-  .app-header,
-  .header-actions {
-    display: none;
-  }
-
-  .app-container {
-    display: block;
-  }
-
-  .documents-grid {
-    grid-template-columns: 1fr;
-  }
+.icon-xl {
+  width: var(--icon-size-xl);
+  height: var(--icon-size-xl);
 }

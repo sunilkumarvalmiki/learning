@@ -15,7 +15,7 @@ export async function initializeQdrant() {
         try {
             await qdrantClient.createCollection('documents', {
                 vectors: {
-                    size: 384,
+                    size: 384, // all-MiniLM-L6-v2 dimension (free HuggingFace model)
                     distance: 'Cosine',
                 },
                 optimizers_config: {
@@ -62,7 +62,7 @@ export async function initializeQdrant() {
         try {
             await qdrantClient.createCollection('notes', {
                 vectors: {
-                    size: 384,
+                    size: 384, // all-MiniLM-L6-v2 dimension (free HuggingFace model)
                     distance: 'Cosine',
                 },
                 optimizers_config: {

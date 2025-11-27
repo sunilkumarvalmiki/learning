@@ -1,6 +1,8 @@
 import { AppDataSource } from '../config/database';
 import { Document, DocumentStatus, FileType } from '../models/Document';
 import { minioClient } from '../scripts/init-minio';
+import { documentProcessingQueue } from './DocumentProcessingQueue';
+import { embeddingService } from './EmbeddingService';
 import config from '../config';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
@@ -59,7 +61,8 @@ export class DocumentService {
 
             await this.documentRepository.save(document);
 
-            // TODO: Queue document processing job (text extraction, embeddings)
+            // Queue document for text extraction and processing
+            documentProcessingQueue.addToQueue(documentId, userId);
 
             return document;
         } catch (error) {
@@ -145,7 +148,15 @@ export class DocumentService {
         // Soft delete in database
         await this.documentRepository.softDelete(documentId);
 
-        // TODO: Optionally delete from MinIO as well
+        // Delete embeddings from Qdrant
+        try {
+            await embeddingService.deleteDocumentEmbeddings(documentId);
+        } catch (error) {
+            console.error(`Failed to delete embeddings for document ${documentId}:`, error);
+            // Don't fail the delete operation if embedding cleanup fails
+        }
+
+        // Optionally delete from MinIO (keeping for now in case of undelete)
         // await minioClient.removeObject(config.minio.bucket, document.filePath!);
 
         return true;

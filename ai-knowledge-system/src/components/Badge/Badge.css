@@ -1,79 +1,405 @@
-/* Badge Component Styles */
+/* ===================================
+   Badge Component - Jira Lozenge Style
+   =================================== */
 
 .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-    font-family: var(--font-primary);
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-025) var(--space-100);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-/* Sizes */
+/* ===================================
+   Badge Sizes
+   =================================== */
+
 .badge--small {
-    font-size: 10px;
-    padding: 1px 6px;
+  font-size: 10px;
+  padding: 1px var(--space-050);
 }
 
 .badge--medium {
-    font-size: var(--font-size-caption);
-    padding: 2px 8px;
+  font-size: var(--font-size-xs);
+  padding: var(--space-025) var(--space-100);
 }
 
 .badge--large {
-    font-size: var(--font-size-body-small);
-    padding: 4px 10px;
+  font-size: var(--font-size-sm);
+  padding: var(--space-050) var(--space-150);
+  text-transform: none;
+  letter-spacing: normal;
 }
 
-/* Variants */
+/* ===================================
+   Badge Variants - Jira Lozenge Colors
+   =================================== */
+
+/* Default - Neutral gray */
 .badge--default {
-    background: var(--color-bg-surface-3);
-    color: var(--color-text-secondary);
+  background: var(--neutral-40);
+  color: var(--neutral-600);
 }
 
+/* Primary - Blue */
 .badge--primary {
-    background: var(--color-primary);
-    color: #FFFFFF;
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
 }
 
+/* Secondary - Purple */
+.badge--secondary {
+  background: var(--color-secondary-subtle);
+  color: var(--color-secondary);
+}
+
+/* Success - Green (Done, Completed) */
 .badge--success {
-    background: var(--color-success);
-    color: #FFFFFF;
+  background: var(--color-success-subtle);
+  color: var(--color-success-emphasis);
 }
 
+/* Warning - Yellow (In Progress, Review) */
 .badge--warning {
-    background: var(--color-warning);
-    color: var(--color-bg-base);
+  background: var(--color-warning-subtle);
+  color: var(--color-warning-emphasis);
 }
 
-.badge--error {
-    background: var(--color-error);
-    color: #FFFFFF;
+/* Error/Danger - Red (Failed, Blocked) */
+.badge--error,
+.badge--danger {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-emphasis);
 }
 
+/* Info - Blue (Processing, Uploading) */
+.badge--info {
+  background: var(--color-info-subtle);
+  color: var(--color-info);
+}
+
+/* Processing - Blue with animation */
+.badge--processing {
+  background: var(--color-processing-subtle);
+  color: var(--color-processing);
+}
+
+/* AI/Special - Gradient */
 .badge--ai {
-    background: linear-gradient(135deg, var(--color-ai-processing-start), var(--color-ai-processing-end));
-    color: #FFFFFF;
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-primary) 100%
+  );
+  color: var(--text-inverse);
 }
 
-/* Dot indicator */
+/* New - Teal accent */
+.badge--new {
+  background: #E6FCFF;
+  color: #006644;
+}
+
+/* ===================================
+   Badge with Dot Indicator
+   =================================== */
+
 .badge__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
 .badge--small .badge__dot {
-    width: 4px;
-    height: 4px;
+  width: 4px;
+  height: 4px;
 }
 
 .badge--large .badge__dot {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
+}
+
+/* Animated dot for processing states */
+.badge__dot--pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ===================================
+   Badge with Icon
+   =================================== */
+
+.badge__icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.badge--small .badge__icon {
+  width: 10px;
+  height: 10px;
+}
+
+.badge--large .badge__icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===================================
+   Badge with Close Button
+   =================================== */
+
+.badge--closable {
+  padding-right: var(--space-050);
+}
+
+.badge__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: var(--space-025);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: currentColor;
+  opacity: 0.6;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.badge__close:hover {
+  opacity: 1;
+}
+
+.badge__close-icon {
+  width: 10px;
+  height: 10px;
+}
+
+/* ===================================
+   Status Badge - Document States
+   =================================== */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+}
+
+.status-badge--uploading {
+  background: var(--color-info-subtle);
+  color: var(--color-info);
+}
+
+.status-badge--processing {
+  background: var(--color-processing-subtle);
+  color: var(--color-processing);
+}
+
+.status-badge--completed {
+  background: var(--color-success-subtle);
+  color: var(--color-success-emphasis);
+}
+
+.status-badge--failed {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-emphasis);
+}
+
+/* ===================================
+   Priority Badge - Jira Priority Style
+   =================================== */
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-025) var(--space-100);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.priority-badge--highest {
+  background: #FFEBE6;
+  color: #BF2600;
+}
+
+.priority-badge--high {
+  background: #FFEBE6;
+  color: #DE350B;
+}
+
+.priority-badge--medium {
+  background: #FFFAE6;
+  color: #FF991F;
+}
+
+.priority-badge--low {
+  background: #E3FCEF;
+  color: #006644;
+}
+
+.priority-badge--lowest {
+  background: #DEEBFF;
+  color: #0052CC;
+}
+
+.priority-badge__icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===================================
+   Count Badge - Notification Style
+   =================================== */
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-050);
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  background: var(--color-danger);
+  color: var(--text-inverse);
+}
+
+.count-badge--primary {
+  background: var(--color-primary);
+}
+
+.count-badge--secondary {
+  background: var(--neutral-100);
+  color: var(--text-primary);
+}
+
+.count-badge--large {
+  min-width: 22px;
+  height: 22px;
+  font-size: var(--font-size-xs);
+}
+
+/* ===================================
+   Tag Badge - Removable Tags
+   =================================== */
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-050) var(--space-100);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.tag-badge:hover {
+  background: var(--surface-hovered);
+  border-color: var(--border-default);
+}
+
+.tag-badge__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.tag-badge__remove:hover {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger);
+}
+
+/* ===================================
+   Dark Mode Adjustments
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+  .badge--default {
+    background: var(--neutral-40);
+    color: var(--neutral-300);
+  }
+
+  .badge--new {
+    background: #1C3329;
+    color: #4BCE97;
+  }
+
+  .priority-badge--highest,
+  .priority-badge--high {
+    background: #42221F;
+    color: #F87168;
+  }
+
+  .priority-badge--medium {
+    background: #332E1B;
+    color: #F5CD47;
+  }
+
+  .priority-badge--low {
+    background: #1C3329;
+    color: #4BCE97;
+  }
+
+  .priority-badge--lowest {
+    background: #1C2B41;
+    color: #579DFF;
+  }
+
+  .tag-badge {
+    background: var(--surface-sunken);
+    border-color: var(--border-subtle);
+  }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+
+@media print {
+  .badge {
+    border: 1px solid currentColor;
+    background: transparent !important;
+  }
+
+  .badge__dot--pulse {
+    animation: none;
+  }
 }

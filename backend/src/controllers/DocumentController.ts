@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { DocumentService } from '../services/DocumentService';
+import { AuthenticatedRequest } from '../middleware/auth';
 
 const documentService = new DocumentService();
 
@@ -8,7 +9,7 @@ export class DocumentController {
      * Upload a new document
      * POST /api/v1/documents/upload
      */
-    async upload(req: Request, res: Response, next: NextFunction) {
+    async upload(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             if (!req.file) {
                 return res.status(400).json({
@@ -17,9 +18,15 @@ export class DocumentController {
                 });
             }
 
-            // TODO: Get userId from authentication middleware
-            // For MVP, using a default user ID
-            const userId = req.body.userId || '00000000-0000-0000-0000-000000000001';
+            // Get userId from auth middleware (optionalAuth sets this)
+            const userId = req.userId || req.body.userId;
+
+            if (!userId) {
+                return res.status(401).json({
+                    error: 'Unauthorized',
+                    message: 'User ID is required',
+                });
+            }
 
             const document = await documentService.uploadDocument(req.file, userId, {
                 title: req.body.title,
@@ -47,13 +54,20 @@ export class DocumentController {
      * List documents
      * GET /api/v1/documents
      */
-    async list(req: Request, res: Response, next: NextFunction) {
+    async list(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             // Get validated query params from validation middleware
             const { page, limit, status, fileType, search } = (req as any).validated || {};
 
-            // TODO: Get userId from authentication
-            const userId = req.query.userId as string || '00000000-0000-0000-0000-000000000001';
+            // Get userId from auth middleware
+            const userId = req.userId || (req.query.userId as string);
+
+            if (!userId) {
+                return res.status(401).json({
+                    error: 'Unauthorized',
+                    message: 'User ID is required',
+                });
+            }
 
             const result = await documentService.listDocuments(userId, {
                 page,
@@ -90,12 +104,19 @@ export class DocumentController {
      * Get a single document
      * GET /api/v1/documents/:id
      */
-    async getById(req: Request, res: Response, next: NextFunction) {
+    async getById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
 
-            // TODO: Get userId from authentication
-            const userId = req.query.userId as string || '00000000-0000-0000-0000-000000000001';
+            // Get userId from auth middleware
+            const userId = req.userId || (req.query.userId as string);
+
+            if (!userId) {
+                return res.status(401).json({
+                    error: 'Unauthorized',
+                    message: 'User ID is required',
+                });
+            }
 
             const document = await documentService.getDocumentById(id, userId);
 
@@ -131,12 +152,19 @@ export class DocumentController {
      * Delete a document
      * DELETE /api/v1/documents/:id
      */
-    async delete(req: Request, res: Response, next: NextFunction) {
+    async delete(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
 
-            // TODO: Get userId from authentication
-            const userId = req.query.userId as string || '00000000-0000-0000-0000-000000000001';
+            // Get userId from auth middleware
+            const userId = req.userId || (req.query.userId as string);
+
+            if (!userId) {
+                return res.status(401).json({
+                    error: 'Unauthorized',
+                    message: 'User ID is required',
+                });
+            }
 
             const deleted = await documentService.deleteDocument(id, userId);
 
@@ -160,13 +188,20 @@ export class DocumentController {
      * Update document metadata
      * PATCH /api/v1/documents/:id
      */
-    async update(req: Request, res: Response, next: NextFunction) {
+    async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const { title, summary } = req.body;
 
-            // TODO: Get userId from authentication
-            const userId = req.body.userId || '00000000-0000-0000-0000-000000000001';
+            // Get userId from auth middleware
+            const userId = req.userId || req.body.userId;
+
+            if (!userId) {
+                return res.status(401).json({
+                    error: 'Unauthorized',
+                    message: 'User ID is required',
+                });
+            }
 
             const document = await documentService.updateDocument(id, userId, {
                 title,

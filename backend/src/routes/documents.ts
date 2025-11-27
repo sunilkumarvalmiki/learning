@@ -2,9 +2,22 @@ import { Router } from 'express';
 import { DocumentController } from '../controllers/DocumentController';
 import { uploadSingle, handleUploadError } from '../middleware/upload';
 import { validate, documentListQuerySchema } from '../middleware/validation';
+import { optionalAuth } from '../middleware/auth';
+import { documentProcessingQueue } from '../services/DocumentProcessingQueue';
 
 const router = Router();
 const documentController = new DocumentController();
+
+// Apply optional authentication to all routes for backwards compatibility
+router.use(optionalAuth);
+
+/**
+ * GET /api/v1/documents/queue/status
+ * Get processing queue status
+ */
+router.get('/queue/status', (_req, res) => {
+    res.json(documentProcessingQueue.getStatus());
+});
 
 /**
  * POST /api/v1/documents/upload

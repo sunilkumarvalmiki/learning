@@ -1,149 +1,455 @@
-/* Card Component Styles */
+/* ===================================
+   Card Component - Jira Style
+   =================================== */
 
 .card {
-    background: var(--color-bg-surface-1);
-    border-radius: var(--radius-lg);
-    transition: all var(--transition-normal) var(--ease-out);
-    display: flex;
-    flex-direction: column;
-    position: relative;
+  background: var(--surface-primary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) var(--ease-default);
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-/* Variants */
+/* ===================================
+   Card Variants
+   =================================== */
+
 .card--default {
-    border: 1px solid var(--color-bg-surface-3);
+  border: 1px solid var(--border-subtle);
 }
 
 .card--outlined {
-    border: 1px solid var(--color-bg-surface-3);
-    background: transparent;
+  border: 1px solid var(--border-default);
+  background: transparent;
 }
 
 .card--elevated {
-    border: 1px solid var(--color-bg-surface-3);
-    box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Padding */
+.card--flat {
+  border: none;
+  background: var(--surface-sunken);
+}
+
+/* ===================================
+   Card Padding Sizes
+   =================================== */
+
 .card--padded {
-    padding: var(--space-md);
+  padding: var(--space-200);
 }
 
-/* Hoverable state */
+.card--padded-sm {
+  padding: var(--space-150);
+}
+
+.card--padded-lg {
+  padding: var(--space-300);
+}
+
+/* ===================================
+   Interactive States
+   =================================== */
+
 .card--hoverable {
-    cursor: pointer;
-
-    &:hover {
-        background: var(--color-bg-surface-2);
-        border-color: var(--color-primary);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        transform: translateY(-2px);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
+  cursor: pointer;
 }
 
-/* Clickable (button) state */
+.card--hoverable:hover {
+  background: var(--surface-hovered);
+  border-color: var(--border-emphasis);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--hoverable:active {
+  background: var(--surface-pressed);
+}
+
+/* Clickable (button) card */
 .card--clickable {
-    cursor: pointer;
-    border: none;
-    text-align: left;
-    width: 100%;
-    font-family: inherit;
-    color: inherit;
-
-    &:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
 }
 
-/* Card sections */
+.card--clickable:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selected state */
+.card--selected {
+  border-color: var(--color-primary);
+  background: var(--surface-selected);
+}
+
+/* ===================================
+   Card Sections
+   =================================== */
+
 .card-header {
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--color-bg-surface-3);
-    margin-bottom: var(--space-md);
+  padding-bottom: var(--space-150);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-150);
+}
+
+.card-header--no-border {
+  border-bottom: none;
+  margin-bottom: var(--space-100);
+  padding-bottom: 0;
 }
 
 .card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
 }
 
 .card-footer {
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--color-bg-surface-3);
-    margin-top: var(--space-md);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
+  padding-top: var(--space-150);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-150);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-150);
 }
 
-/* Document card specific styles */
+.card-footer--no-border {
+  border-top: none;
+  padding-top: var(--space-100);
+}
+
+/* ===================================
+   Document Card - Jira Issue Style
+   =================================== */
+
 .document-card {
-    height: 280px;
-    width: 220px;
-    overflow: hidden;
+  min-height: 160px;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.document-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-100);
+  margin-bottom: var(--space-100);
+}
+
+.document-card__icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary-subtle);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
 }
 
 .document-card__icon {
-    width: 48px;
-    height: 48px;
-    color: var(--color-text-tertiary);
-    margin-bottom: var(--space-sm);
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary);
+}
+
+.document-card__actions {
+  display: flex;
+  gap: var(--space-025);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.document-card:hover .document-card__actions {
+  opacity: 1;
+}
+
+.document-card__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.document-card__action-btn:hover {
+  background: var(--surface-pressed);
+  color: var(--text-primary);
+}
+
+.document-card__action-btn--danger:hover {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger);
 }
 
 .document-card__title {
-    font-size: var(--font-size-h4);
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-sm);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-    /* Standard property for compatibility */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-050);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--line-height-tight);
 }
 
 .document-card__preview {
-    font-size: var(--font-size-body-small);
-    color: var(--color-text-secondary);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    line-clamp: 3;
-    /* Standard property for compatibility */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
-    margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-150);
 }
 
 .document-card__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-050);
+  margin-bottom: var(--space-100);
 }
 
 .document-card__tag {
-    font-size: var(--font-size-caption);
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-    background: var(--color-bg-surface-3);
-    color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  padding: var(--space-025) var(--space-100);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
 }
 
 .document-card__meta {
-    font-size: var(--font-size-caption);
-    color: var(--color-text-tertiary);
-    margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: auto;
+  padding-top: var(--space-150);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.document-card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+}
+
+.document-card__meta-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--text-disabled);
+}
+
+.document-card__meta-separator {
+  color: var(--text-disabled);
+}
+
+/* ===================================
+   Stat Card - Dashboard Style
+   =================================== */
+
+.stat-card {
+  padding: var(--space-200);
+}
+
+.stat-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-100);
+}
+
+.stat-card__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.stat-card__icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-tertiary);
+}
+
+.stat-card__value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: var(--space-050);
+}
+
+.stat-card__change {
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+  font-size: var(--font-size-xs);
+}
+
+.stat-card__change--positive {
+  color: var(--color-success);
+}
+
+.stat-card__change--negative {
+  color: var(--color-danger);
+}
+
+.stat-card__change-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===================================
+   Action Card - Quick Actions
+   =================================== */
+
+.action-card {
+  padding: var(--space-200);
+  text-align: center;
+}
+
+.action-card__icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-150);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-lg);
+}
+
+.action-card__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+}
+
+.action-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-050);
+}
+
+.action-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.action-card:hover .action-card__icon-wrapper {
+  background: var(--color-primary-subtle);
+}
+
+/* ===================================
+   List Card - Compact List View
+   =================================== */
+
+.list-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-150);
+  padding: var(--space-150) var(--space-200);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.list-card:last-child {
+  border-bottom: none;
+}
+
+.list-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+}
+
+.list-card__content {
+  min-width: 0;
+}
+
+.list-card__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-card__subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.list-card__actions {
+  display: flex;
+  gap: var(--space-050);
+}
+
+/* ===================================
+   Dark Mode Adjustments
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+  .card--elevated {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card--hoverable:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .document-card__icon-wrapper {
+    background: rgba(87, 157, 255, 0.15);
+  }
+
+  .action-card:hover .action-card__icon-wrapper {
+    background: rgba(87, 157, 255, 0.2);
+  }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+
+@media print {
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .document-card__actions {
+    display: none;
+  }
 }

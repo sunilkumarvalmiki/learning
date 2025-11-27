@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/database';
 import { Document } from '../models/Document';
-import { qdrantClient } from '../scripts/init-qdrant';
+import { embeddingService } from './EmbeddingService';
 
 export interface SearchResult {
     id: string;
@@ -88,43 +88,63 @@ export class SearchService {
     ): Promise<{ results: SearchResult[]; total: number }> {
         const limit = options.limit || 20;
 
-        // TODO: Generate embedding for query text
-        // For now, return empty results as we haven't implemented embedding generation yet
-        console.warn('Semantic search requires embedding generation - not yet implemented');
+        try {
+            // Use embedding service to search for similar documents
+            const similarResults = await embeddingService.searchSimilar(
+                query,
+                options.userId,
+                limit * 2 // Get more results to deduplicate by document
+            );
 
-        // Placeholder: In production, this would:
-        // 1. Generate embedding for query using same model as documents
-        // 2. Search Qdrant for similar vectors
-        // 3. Retrieve document metadata from PostgreSQL
+            if (similarResults.length === 0) {
+                return { results: [], total: 0 };
+            }
 
-        /*
-        const queryEmbedding = await generateEmbedding(query); // TODO: Implement
-        
-        const searchResult = await qdrantClient.search('documents', {
-          vector: queryEmbedding,
-          limit,
-          filter: options.userId ? {
-            must: [{ key: 'user_id', match: { value: options.userId } }]
-          } : undefined,
-        });
-    
-        const documentIds = searchResult.map(r => r.id);
-        const documents = await this.documentRepository.findByIds(documentIds);
-        
-        return {
-          results: documents.map((doc, idx) => ({
-            id: doc.id,
-            title: doc.title,
-            content: doc.content,
-            fileName: doc.fileName,
-            fileType: doc.fileType,
-            score: searchResult[idx].score,
-          })),
-          total: searchResult.length,
-        };
-        */
+            // Deduplicate by document ID and get highest scoring chunk per document
+            const documentScores = new Map<string, { score: number; chunkContent: string; title?: string }>();
 
-        return { results: [], total: 0 };
+            for (const result of similarResults) {
+                const existing = documentScores.get(result.documentId);
+                if (!existing || result.score > existing.score) {
+                    documentScores.set(result.documentId, {
+                        score: result.score,
+                        chunkContent: result.chunkContent,
+                        title: result.title,
+                    });
+                }
+            }
+
+            // Get document metadata from PostgreSQL
+            const documentIds = Array.from(documentScores.keys());
+            const documents = await this.documentRepository
+                .createQueryBuilder('document')
+                .where('document.id IN (:...ids)', { ids: documentIds })
+                .andWhere('document.deletedAt IS NULL')
+                .getMany();
+
+            // Map documents with scores
+            const results: SearchResult[] = documents
+                .map((doc) => {
+                    const scoreData = documentScores.get(doc.id);
+                    return {
+                        id: doc.id,
+                        title: doc.title || 'Untitled',
+                        content: doc.content,
+                        fileName: doc.fileName,
+                        fileType: doc.fileType,
+                        score: scoreData?.score || 0,
+                        highlights: scoreData?.chunkContent ? [scoreData.chunkContent.slice(0, 200)] : [],
+                    };
+                })
+                .sort((a, b) => b.score - a.score)
+                .slice(0, limit);
+
+            return { results, total: documentScores.size };
+        } catch (error) {
+            console.error('Semantic search error:', error);
+            // Fall back to empty results on error
+            return { results: [], total: 0 };
+        }
     }
 
     /**
