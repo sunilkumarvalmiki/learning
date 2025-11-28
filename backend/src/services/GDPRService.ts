@@ -155,11 +155,36 @@ export class GDPRService {
             });
 
             for (const doc of documents) {
-                // TODO: Delete from MinIO storage
-                // await minioClient.removeObject(bucket, doc.storageKey);
+                // Delete from MinIO storage (S3-compatible)
+                try {
+                    const { bucketName, minioClient } = await import('../config/index');
+                    if (minioClient && doc.storageKey) {
+                        await minioClient.removeObject(bucketName, doc.storageKey);
+                    }
+                } catch (error) {
+                    // Log but don't fail - continue with deletion
+                    console.error(`Failed to delete MinIO object for document ${doc.id}:`, error);
+                }
 
                 // Delete from Qdrant (vector embeddings)
-                // TODO: Implement Qdrant deletion
+                try {
+                    const { qdrantClient } = await import('../config/index');
+                    if (qdrantClient) {
+                        await qdrantClient.delete('documents', {
+                            filter: {
+                                must: [
+                                    {
+                                        key: 'document_id',
+                                        match: { value: doc.id }
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                } catch (error) {
+                    // Log but don't fail - continue with deletion
+                    console.error(`Failed to delete Qdrant embeddings for document ${doc.id}:`, error);
+                }
 
                 // Delete from PostgreSQL
                 await queryRunner.manager.delete(Document, { id: doc.id });
