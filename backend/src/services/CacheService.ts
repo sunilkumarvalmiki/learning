@@ -1,7 +1,5 @@
-```typescript
 import { RedisClientType } from 'redis';
-import { redisClient } from '../config/redis';
-import { logCache, logError } from '../utils/structuredLogger';
+import { getRedisClient } from '../config/redis';
 
 export interface CacheOptions {
     ttl?: number; // Time to live in seconds
@@ -13,15 +11,15 @@ export class CacheService {
     private misses: number = 0;
 
     constructor() {
-        this.client = redisClient;
+        this.client = getRedisClient();
     }
 
     /**
      * Get a value from cache
      */
     async get<T>(key: string): Promise<T | null> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for get operation', { key });
+        if (!this.client) {
+            console.warn('Redis client not available');
             this.misses++;
             return null;
         }
@@ -35,7 +33,7 @@ export class CacheService {
             this.misses++;
             return null;
         } catch (error) {
-            logError('Cache get failed', error, { key });
+            console.error(`Cache get error for key ${key}:`, error);
             this.misses++;
             return null;
         }
@@ -45,8 +43,8 @@ export class CacheService {
      * Set a value in cache
      */
     async set(key: string, value: any, options?: CacheOptions): Promise<boolean> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for set operation', { key });
+        if (!this.client) {
+            console.warn('Redis client not available');
             return false;
         }
 
@@ -59,7 +57,7 @@ export class CacheService {
             }
             return true;
         } catch (error) {
-            logError('Cache set failed', error, { key });
+            console.error(`Cache set error for key ${key}:`, error);
             return false;
         }
     }
@@ -68,8 +66,8 @@ export class CacheService {
      * Delete a value from cache
      */
     async delete(key: string): Promise<boolean> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for delete operation', { key });
+        if (!this.client) {
+            console.warn('Redis client not available');
             return false;
         }
 
@@ -77,7 +75,7 @@ export class CacheService {
             await this.client.del(key);
             return true;
         } catch (error) {
-            logError('Cache delete failed', error, { key });
+            console.error(`Cache delete error for key ${key}:`, error);
             return false;
         }
     }
@@ -86,8 +84,8 @@ export class CacheService {
      * Delete multiple keys matching a pattern
      */
     async deletePattern(pattern: string): Promise<number> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for deletePattern operation', { pattern });
+        if (!this.client) {
+            console.warn('Redis client not available');
             return 0;
         }
 
@@ -99,7 +97,7 @@ export class CacheService {
             }
             return 0;
         } catch (error) {
-            logError('Cache delete pattern failed', error, { pattern });
+            console.error(`Cache delete pattern error for pattern ${pattern}:`, error);
             return 0;
         }
     }
@@ -108,8 +106,7 @@ export class CacheService {
      * Check if a key exists
      */
     async exists(key: string): Promise<boolean> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for exists operation', { key });
+        if (!this.client) {
             return false;
         }
 
@@ -117,7 +114,7 @@ export class CacheService {
             const result = await this.client.exists(key);
             return result === 1;
         } catch (error) {
-            logError('Cache exists failed', error, { key });
+            console.error(`Cache exists error for key ${key}:`, error);
             return false;
         }
     }
@@ -170,8 +167,8 @@ export class CacheService {
      * Flush all cache
      */
     async flush(): Promise<boolean> {
-        if (!this.client?.isReady) {
-            logCache('warn', 'Redis client not available for flush operation');
+        if (!this.client) {
+            console.warn('Redis client not available');
             return false;
         }
 
@@ -179,7 +176,7 @@ export class CacheService {
             await this.client.flushDb();
             return true;
         } catch (error) {
-            logError('Cache flush failed', error);
+            console.error('Cache flush error:', error);
             return false;
         }
     }
