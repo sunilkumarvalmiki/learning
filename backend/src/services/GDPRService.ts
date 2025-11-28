@@ -2,6 +2,7 @@ import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import { Document } from '../models/Document';
 import { auditLogger } from './AuditLogger';
+import { qdrantClient, minioClient, bucketName } from '../config'; // Import qdrantClient, minioClient, and bucketName directly
 
 /**
  * GDPR Compliance Service
@@ -121,9 +122,8 @@ export class GDPRService {
                     success: log.success,
                 })),
                 exportMetadata: {
-                    requestDate: new Date().toISOString(),
-                    dataCategories: ['profile', 'documents', 'activity_logs', 'search_history'],
-                    format: 'json',
+                    exportDate: new Date(), // Changed from ISOString to Date to match interface
+                    dataRetentionPolicy: this.getDataRetentionPolicy().userProfiles, // Example, could be more detailed
                     contactEmail: process.env.GDPR_CONTACT_EMAIL || process.env.SUPPORT_EMAIL || 'privacy@company.com',
                 },
             };
@@ -157,8 +157,7 @@ export class GDPRService {
             for (const doc of documents) {
                 // Delete from MinIO storage (S3-compatible)
                 try {
-                    const { bucketName, minioClient } = await import('../config/index');
-                    if (minioClient && doc.storageKey) {
+                    if (minioClient && bucketName && doc.storageKey) {
                         await minioClient.removeObject(bucketName, doc.storageKey);
                     }
                 } catch (error) {
@@ -168,7 +167,6 @@ export class GDPRService {
 
                 // Delete from Qdrant (vector embeddings)
                 try {
-                    const { qdrantClient } = await import('../config/index');
                     if (qdrantClient) {
                         await qdrantClient.delete('documents', {
                             filter: {

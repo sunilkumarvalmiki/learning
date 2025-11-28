@@ -4,7 +4,7 @@
  * Use this for development until full logger integration
  */
 
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 
 /**
  * Structured log with document context
