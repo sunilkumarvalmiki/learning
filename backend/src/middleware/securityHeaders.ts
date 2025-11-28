@@ -1,81 +1,113 @@
 import helmet from 'helmet';
+import { Express } from 'express';
+
+/**
+ * Configure comprehensive security headers using Helmet.js
+ * Targets SecurityHeaders.com Grade A
+ * FIXED: Removed unsafe-inline from CSP for production security
+ */
+
+export const configureSecurityHeaders = (app: Express) => {
+    // Use Helmet with custom configuration
+    app.use(
+        helmet({
+            // Content Security Policy - STRICT (no unsafe-inline)
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'"], // FIXED: Removed unsafe-inline
+                    styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+                    fontSrc: ["'self'", "https://fonts.gstatic.com"],
+                    imgSrc: ["'self'", "data:", "https:"],
+                    connectSrc: ["'self'"],
+                    frameSrc: ["'none'"],
+                    objectSrc: ["'none'"],
+                    upgradeInsecureRequests: [],
+                },
             },
 
-// X-Frame-Options: Prevent clickjacking
-frameguard: {
-    action: 'deny',
+            // HTTP Strict Transport Security
+            hsts: {
+                maxAge: 31536000, // 1 year in seconds
+                includeSubDomains: true,
+                preload: true,
             },
 
-// X-Content-Type-Options: Prevent MIME sniffing
-noSniff: true,
-
-    // X-DNS-Prefetch-Control: Control DNS prefetching
-    dnsPrefetchControl: {
-    allow: false,
+            // X-Frame-Options: Prevent clickjacking
+            frameguard: {
+                action: 'deny',
             },
 
-// X-Download-Options: Prevent IE from executing downloads
-ieNoOpen: true,
+            // X-Content-Type-Options: Prevent MIME sniffing
+            noSniff: true,
 
-    // Referrer-Policy: Control referrer information
-    referrerPolicy: {
-    policy: 'strict-origin-when-cross-origin',
+            // X-DNS-Prefetch-Control: Control DNS prefetching
+            dnsPrefetchControl: {
+                allow: false,
             },
 
-// Permissions-Policy (formerly Feature-Policy)
-permittedCrossDomainPolicies: {
-    permittedPolicies: 'none',
+            // X-Download-Options: Prevent IE from executing downloads
+            ieNoOpen: true,
+
+            // Referrer-Policy: Control referrer information
+            referrerPolicy: {
+                policy: 'strict-origin-when-cross-origin',
             },
 
-// X-Powered-By: Remove
-hidePoweredBy: true,
-
-    // Expect-CT: Certificate Transparency
-    expectCt: {
-    enforce: true,
-        maxAge: 86400, // 24 hours
+            // Permissions-Policy (formerly Feature-Policy)
+            permittedCrossDomainPolicies: {
+                permittedPolicies: 'none',
             },
 
-// Cross-Origin-Embedder-Policy
-crossOriginEmbedderPolicy: false, // May break some integrations, enable with caution
+            // X-Powered-By: Remove
+            hidePoweredBy: true,
 
-    // Cross-Origin-Opener-Policy
-    crossOriginOpenerPolicy: { policy: 'same-origin' },
+            // Expect-CT: Certificate Transparency
+            expectCt: {
+                enforce: true,
+                maxAge: 86400, // 24 hours
+            },
 
-// Cross-Origin-Resource-Policy
-crossOriginResourcePolicy: { policy: 'same-origin' },
+            // Cross-Origin-Embedder-Policy
+            crossOriginEmbedderPolicy: false, // May break some integrations, enable with caution
 
-// Origin-Agent-Cluster
-originAgentCluster: true,
+            // Cross-Origin-Opener-Policy
+            crossOriginOpenerPolicy: { policy: 'same-origin' },
+
+            // Cross-Origin-Resource-Policy
+            crossOriginResourcePolicy: { policy: 'same-origin' },
+
+            // Origin-Agent-Cluster
+            originAgentCluster: true,
         })
     );
 
-// Additional custom security headers
-app.use((_req, res, next) => {
-    // Permissions-Policy
-    res.setHeader(
-        'Permissions-Policy',
-        [
-            'geolocation=()',
-            'microphone=()',
-            'camera=()',
-            'payment=()',
-            'usb=()',
-            'magnetometer=()',
-            'gyroscope=()',
-            'accelerometer=()',
-        ].join(', ')
-    );
+    // Additional custom security headers
+    app.use((_req, res, next) => {
+        // Permissions-Policy
+        res.setHeader(
+            'Permissions-Policy',
+            [
+                'geolocation=()',
+                'microphone=()',
+                'camera=()',
+                'payment=()',
+                'usb=()',
+                'magnetometer=()',
+                'gyroscope=()',
+                'accelerometer=()',
+            ].join(', ')
+        );
 
-    // X-XSS-Protection (legacy, but some browsers still use it)
-    res.setHeader('X-XSS-Protection', '1; mode=block');
+        // X-XSS-Protection (legacy, but some browsers still use it)
+        res.setHeader('X-XSS-Protection', '1; mode=block');
 
-    // Remove Server header
-    res.removeHeader('X-Powered-By');
-    res.removeHeader('Server');
+        // Remove Server header
+        res.removeHeader('X-Powered-By');
+        res.removeHeader('Server');
 
-    next();
-});
+        next();
+    });
 };
 
 /**
