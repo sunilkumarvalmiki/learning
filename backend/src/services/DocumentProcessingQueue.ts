@@ -2,6 +2,7 @@ import { AppDataSource } from '../config/database';
 import { Document, DocumentStatus } from '../models/Document';
 import { textExtractionService } from './TextExtractionService';
 import { embeddingService } from './EmbeddingService';
+import { logQueue, logError } from '../utils/structuredLogger';
 
 interface ProcessingJob {
     documentId: string;
@@ -35,7 +36,11 @@ export class DocumentProcessingQueue {
         };
 
         this.queue.push(job);
-        console.log(`📥 Document ${documentId} added to processing queue. Queue size: ${this.queue.length}`);
+        logQueue('info', 'Document added to processing queue', {
+            documentId,
+            userId,
+            queueSize: this.queue.length
+        });
 
         // Start processing if not already running
         this.processQueue();
@@ -75,7 +80,11 @@ export class DocumentProcessingQueue {
      */
     private async processJob(job: ProcessingJob): Promise<void> {
         const startTime = Date.now();
-        console.log(`🔄 Processing document ${job.documentId}...`);
+        logQueue('info', 'Processing document', {
+            documentId: job.documentId,
+            userId: job.userId,
+            retryCount: job.retryCount
+        });
 
         try {
             const document = await this.documentRepository.findOne({
@@ -83,7 +92,9 @@ export class DocumentProcessingQueue {
             });
 
             if (!document) {
-                console.error(`❌ Document ${job.documentId} not found`);
+                logError('Document not found in queue processing', undefined, {
+                    documentId: job.documentId
+                });
                 return;
             }
 
@@ -108,34 +119,56 @@ export class DocumentProcessingQueue {
                 status: DocumentStatus.COMPLETED,
             });
 
+            let embeddingResult: { chunksProcessed: number; totalTokens: number } | null = null;
             // Generate and store embeddings in Qdrant
             try {
-                const embeddingResult = await embeddingService.processDocument(
+                embeddingResult = await embeddingService.processDocument(
                     job.documentId,
                     job.userId,
                     extractionResult.content,
                     document.fileType,
                     document.title
                 );
-                console.log(`   - Embeddings: ${embeddingResult.chunksProcessed} chunks, ${embeddingResult.totalTokens} tokens`);
+                logQueue('info', 'Embeddings generated', {
+                    documentId: job.documentId,
+                    chunksProcessed: embeddingResult.chunksProcessed,
+                    totalTokens: embeddingResult.totalTokens
+                });
             } catch (embeddingError) {
-                console.warn(`⚠️ Embedding generation failed for ${job.documentId}:`, embeddingError);
+                logQueue('warn', 'Embedding generation failed for document', {
+                    documentId: job.documentId,
+                    error: embeddingError instanceof Error ? embeddingError.message : String(embeddingError)
+                });
                 // Don't fail the entire job if embeddings fail
             }
 
             const duration = Date.now() - startTime;
-            console.log(`✅ Document ${job.documentId} processed successfully in ${duration}ms`);
-            console.log(`   - Content: ${extractionResult.content.length} chars`);
-            console.log(`   - Words: ${extractionResult.metadata?.wordCount || 0}`);
+            logQueue('info', 'Document processed successfully', {
+                documentId: job.documentId,
+                duration,
+                contentLength: extractionResult.content.length,
+                wordCount: extractionResult.metadata?.wordCount || 0,
+                embeddings: embeddingResult ? {
+                    chunks: embeddingResult.chunksProcessed,
+                    tokens: embeddingResult.totalTokens
+                } : null
+            });
 
-        } catch (error) {
+        } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            console.error(`❌ Failed to process document ${job.documentId}:`, errorMessage);
+            logError('Failed to process document', error, {
+                documentId: job.documentId,
+                retryCount: job.retryCount
+            });
 
             // Retry logic
             if (job.retryCount < this.maxRetries) {
                 job.retryCount++;
-                console.log(`🔄 Retrying document ${job.documentId} (attempt ${job.retryCount}/${this.maxRetries})`);
+                logQueue('warn', 'Retrying document processing', {
+                    documentId: job.documentId,
+                    retryCount: job.retryCount,
+                    maxRetries: this.maxRetries
+                });
                 this.queue.push(job);
             } else {
                 await this.updateDocumentStatus(job.documentId, DocumentStatus.FAILED, errorMessage);
