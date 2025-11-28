@@ -1,0 +1,110 @@
+# Infrastructure Alerting Rules
+groups:
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      # Disk Space Alerts
+
+      - alert: DiskSpaceCritical
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"}
+            /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: disk
+        annotations:
+          summary: "Critical disk space"
+          description: "Disk space is {{ $value | humanizePercentage }} available (threshold: 10%)"
+          runbook_url: "https://docs.example.com/runbooks/disk-space"
+
+      - alert: DiskSpaceWarning
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"}
+            /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) < 0.2
+        for: 10m
+        labels:
+          severity: warning
+          component: disk
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is {{ $value | humanizePercentage }} available (threshold: 20%)"
+
+      # CPU Alerts
+
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: cpu
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      # Memory Alerts
+
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)
+          ) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          component: memory
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      # Container Alerts (cAdvisor)
+
+      - alert: ContainerDown
+        expr: time() - container_last_seen > 60
+        for: 2m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container is down"
+          description: "Container {{ $labels.name }} has been down for 2 minutes"
+
+      - alert: ContainerHighCPU
+        expr: |
+          sum(rate(container_cpu_usage_seconds_total[5m])) by (name) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container high CPU usage"
+          description: "Container {{ $labels.name }} CPU usage: {{ $value }}"
+
+      # MinIO Storage Alerts
+
+      - alert: MinIODown
+        expr: up{job="minio"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: minio
+        annotations:
+          summary: "MinIO object storage is down"
+          description: "MinIO instance {{ $labels.instance }} is down"
+
+      - alert: MinIODiskFull
+        expr: minio_cluster_disk_total_bytes - minio_cluster_disk_free_bytes > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: minio
+        annotations:
+          summary: "MinIO disk usage high"
+          description: "MinIO disk usage is {{ $value | humanizePercentage }}"

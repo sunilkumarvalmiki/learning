@@ -1,0 +1,210 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-28",
+  "project": {
+    "name": "AI Knowledge Management System",
+    "path": "/Users/sunilkumar/learning",
+    "repository": "https://github.com/sunilkumarvalmiki/learning"
+  },
+  "agents": {
+    "orchestrator": {
+      "file": "00-orchestrator-agent.md",
+      "priority": "P0",
+      "enabled": true,
+      "description": "Master coordinator for all quality improvements",
+      "estimatedTime": "2-3 hours",
+      "dependencies": []
+    },
+    "backend": {
+      "file": "01-backend-quality-agent.md",
+      "priority": "P1",
+      "enabled": true,
+      "description": "Backend API quality, testing, security",
+      "estimatedTime": "4-6 hours",
+      "dependencies": [],
+      "targets": {
+        "testCoverage": 80,
+        "apiDocumentation": 13,
+        "vulnerabilities": 0
+      }
+    },
+    "frontend": {
+      "file": "02-frontend-quality-agent.md",
+      "priority": "P1",
+      "enabled": true,
+      "description": "React components, Tauri app, accessibility",
+      "estimatedTime": "4-6 hours",
+      "dependencies": [],
+      "targets": {
+        "componentCoverage": 90,
+        "a11yViolations": 0,
+        "bundleSize": 150,
+        "lighthouseScore": 90
+      }
+    },
+    "database": {
+      "file": "03-database-optimization-agent.md",
+      "priority": "P1",
+      "enabled": true,
+      "description": "PostgreSQL, Qdrant, Neo4j, MinIO optimization",
+      "estimatedTime": "3-5 hours",
+      "dependencies": ["backend"],
+      "targets": {
+        "queryP99": 100,
+        "backupAutomated": true,
+        "indexesOptimized": true
+      }
+    },
+    "security": {
+      "file": "04-security-compliance-agent.md",
+      "priority": "P0",
+      "enabled": true,
+      "description": "OWASP Top 10, GDPR, security hardening",
+      "estimatedTime": "6-8 hours",
+      "dependencies": ["backend"],
+      "targets": {
+        "owaspCoverage": 100,
+        "vulnerabilities": 0,
+        "gdprCompliance": 100,
+        "securityHeadersGrade": "A"
+      }
+    },
+    "performance": {
+      "file": "05-performance-optimization-agent.md",
+      "priority": "P1",
+      "enabled": true,
+      "description": "API latency, caching, frontend performance",
+      "estimatedTime": "5-7 hours",
+      "dependencies": ["backend", "database"],
+      "targets": {
+        "apiP99": 500,
+        "searchP99": 500,
+        "bundleSize": 150,
+        "throughput": 1000
+      }
+    },
+    "infrastructure": {
+      "file": "06-infrastructure-devops-agent.md",
+      "priority": "P2",
+      "enabled": true,
+      "description": "Docker, Kubernetes, CI/CD, IaC",
+      "estimatedTime": "4-6 hours",
+      "dependencies": [],
+      "targets": {
+        "kubernetesReady": true,
+        "cicdEnhanced": true,
+        "iacImplemented": true
+      }
+    },
+    "documentation": {
+      "file": "07-documentation-quality-agent.md",
+      "priority": "P2",
+      "enabled": true,
+      "description": "API docs, architecture diagrams, guides",
+      "estimatedTime": "3-5 hours",
+      "dependencies": ["backend", "frontend"],
+      "targets": {
+        "apiDocsComplete": true,
+        "architectureDiagrams": true,
+        "runbooksCreated": true
+      }
+    },
+    "testing": {
+      "file": "08-testing-qa-agent.md",
+      "priority": "P1",
+      "enabled": true,
+      "description": "Comprehensive test coverage >80%",
+      "estimatedTime": "5-7 hours",
+      "dependencies": ["backend", "frontend"],
+      "targets": {
+        "backendCoverage": 80,
+        "frontendCoverage": 80,
+        "e2eTests": 20,
+        "performanceTests": true
+      }
+    },
+    "monitoring": {
+      "file": "09-monitoring-observability-agent.md",
+      "priority": "P2",
+      "enabled": true,
+      "description": "Metrics, logging, tracing, alerting",
+      "estimatedTime": "4-6 hours",
+      "dependencies": ["backend", "infrastructure"],
+      "targets": {
+        "metricsCollected": true,
+        "dashboardsCreated": true,
+        "alertingConfigured": true,
+        "structuredLogging": true
+      }
+    },
+    "taskManagement": {
+      "file": "10-task-management-agent.md",
+      "priority": "P0",
+      "enabled": true,
+      "description": "Advanced task management & development tracking system",
+      "estimatedTime": "6-8 weeks",
+      "dependencies": ["backend", "database"],
+      "targets": {
+        "taskCreationTime": 100,
+        "searchPerformance": 200,
+        "criticalPathCalculation": 500,
+        "testCoverage": 80,
+        "maxActiveTasks": 10000,
+        "concurrentUsers": 100,
+        "aiEstimationAccuracy": 80
+      }
+    }
+  },
+  "execution": {
+    "mode": "sequential",
+    "maxConcurrent": 1,
+    "timeout": 28800,
+    "retryOnFailure": true,
+    "maxRetries": 2,
+    "createBranch": true,
+    "autoCommit": false,
+    "requireApproval": true
+  },
+  "qualityGates": {
+    "tests": {
+      "mustPass": true,
+      "minCoverage": 80
+    },
+    "security": {
+      "maxVulnerabilities": 0,
+      "scanRequired": true
+    },
+    "performance": {
+      "maxP99Latency": 500,
+      "maxBundleSize": 150
+    },
+    "code": {
+      "lintMustPass": true,
+      "typeCheckMustPass": true,
+      "noTodoComments": false
+    }
+  },
+  "reporting": {
+    "enabled": true,
+    "directory": ".claude/agents/reports",
+    "format": "markdown",
+    "includeMetrics": true,
+    "generateSummary": true
+  },
+  "notifications": {
+    "enabled": false,
+    "slack": {
+      "webhook": "",
+      "channel": "#quality-agents"
+    },
+    "email": {
+      "enabled": false,
+      "recipients": []
+    }
+  },
+  "schedule": {
+    "enabled": false,
+    "cron": "0 2 * * 0",
+    "description": "Weekly on Sunday at 2 AM"
+  }
+}

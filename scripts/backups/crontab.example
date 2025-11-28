@@ -1,0 +1,127 @@
+# Knowledge Management System - Automated Backup Schedule
+#
+# This file contains example crontab entries for automated database backups
+#
+# To install:
+# 1. Edit this file to match your environment
+# 2. Run: crontab -e
+# 3. Add the desired schedule entries below
+# 4. Save and exit
+#
+# Crontab format:
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of week (0 - 6) (Sunday to Saturday)
+# │ │ │ │ │
+# * * * * * command to execute
+
+# Set environment variables for backup scripts
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=admin@example.com
+
+# Database connection settings
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=knowledge_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+
+QDRANT_URL=http://localhost:6333
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=password
+
+# Backup destination
+BACKUP_BASE_DIR=/var/backups/knowledge-db
+
+# Optional: S3 bucket for off-site backups
+# BACKUP_S3_BUCKET=my-backup-bucket
+
+# Optional: Notification webhook (Slack, Discord, etc.)
+# BACKUP_NOTIFICATION_WEBHOOK=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+# ============================================================================
+# BACKUP SCHEDULES
+# ============================================================================
+
+# Full backup of all databases - Daily at 2:00 AM
+0 2 * * * /path/to/knowledge-management/scripts/backups/backup-all.sh ${BACKUP_BASE_DIR}
+
+# Individual database backups (if you prefer separate schedules)
+
+# PostgreSQL - Daily at 1:00 AM
+# 0 1 * * * /path/to/knowledge-management/scripts/backups/backup-postgres.sh ${BACKUP_BASE_DIR}/postgres
+
+# Qdrant - Every 6 hours (vector data changes frequently)
+# 0 */6 * * * /path/to/knowledge-management/scripts/backups/backup-qdrant.sh ${BACKUP_BASE_DIR}/qdrant
+
+# Neo4j - Daily at 3:00 AM
+# 0 3 * * * /path/to/knowledge-management/scripts/backups/backup-neo4j.sh ${BACKUP_BASE_DIR}/neo4j
+
+# Weekly full backup (Sunday at 1:00 AM) with S3 upload
+# 0 1 * * 0 BACKUP_S3_BUCKET=my-backup-bucket /path/to/knowledge-management/scripts/backups/backup-all.sh ${BACKUP_BASE_DIR}
+
+# ============================================================================
+# BACKUP VERIFICATION
+# ============================================================================
+
+# Verify backup integrity - Daily at 6:00 AM
+# 0 6 * * * /path/to/knowledge-management/scripts/backups/verify-backups.sh ${BACKUP_BASE_DIR}
+
+# ============================================================================
+# CLEANUP AND MAINTENANCE
+# ============================================================================
+
+# Clean up old backups (older than 30 days) - Weekly on Monday at 4:00 AM
+# 0 4 * * 1 find ${BACKUP_BASE_DIR} -type f -name "*backup_*" -mtime +30 -delete
+
+# Vacuum and analyze PostgreSQL - Weekly on Sunday at 4:00 AM
+# 0 4 * * 0 PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "VACUUM ANALYZE;"
+
+# ============================================================================
+# MONITORING AND REPORTING
+# ============================================================================
+
+# Generate weekly backup report - Monday at 9:00 AM
+# 0 9 * * 1 /path/to/knowledge-management/scripts/backups/generate-backup-report.sh ${BACKUP_BASE_DIR}
+
+# Check backup health and send alert if last backup is older than 25 hours
+# 0 */4 * * * /path/to/knowledge-management/scripts/backups/check-backup-health.sh ${BACKUP_BASE_DIR}
+
+# ============================================================================
+# PRODUCTION RECOMMENDATIONS
+# ============================================================================
+#
+# For production environments, consider:
+#
+# 1. Multiple backup copies:
+#    - Local backups (fast recovery)
+#    - Off-site backups (S3, another datacenter)
+#    - Archive backups (monthly snapshots kept for 1 year)
+#
+# 2. Backup frequency:
+#    - Critical data: Every 6-12 hours
+#    - Standard data: Daily
+#    - Archives: Weekly/Monthly
+#
+# 3. Retention policy:
+#    - Daily backups: 7 days
+#    - Weekly backups: 4 weeks
+#    - Monthly backups: 12 months
+#    - Yearly archives: Keep indefinitely
+#
+# 4. Testing:
+#    - Test restore monthly
+#    - Document restore procedures
+#    - Practice disaster recovery scenarios
+#
+# 5. Monitoring:
+#    - Alert on backup failures
+#    - Track backup size trends
+#    - Monitor storage capacity
+#    - Verify backup integrity
+#
+# ============================================================================

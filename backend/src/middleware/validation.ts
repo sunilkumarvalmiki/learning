@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
-// Zod schema for query parameters validation
+// Legacy export for backwards compatibility
 export const documentListQuerySchema = z.object({
     page: z.string().optional().default('1').transform(Number),
     limit: z.string().optional().default('20').transform(Number),
@@ -10,20 +10,49 @@ export const documentListQuerySchema = z.object({
     search: z.string().optional(),
 });
 
-// Middleware to validate request data
+// Enhanced validation middleware with support for body, query, and params
 export const validate = (schema: z.ZodSchema) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // Validate query params, body, or params depending on request
-            const data = {
-                ...req.query,
-                ...req.body,
-                ...req.params,
-            };
+            // Parse the schema to determine what to validate
+            const shape = (schema as any)._def?.shape?.();
 
-            const validated = schema.parse(data);
+            let dataToValidate: any = {};
+
+            if (shape) {
+                // Schema has structure (body, query, params)
+                if (shape.body) {
+                    dataToValidate.body = req.body;
+                }
+                if (shape.query) {
+                    dataToValidate.query = req.query;
+                }
+                if (shape.params) {
+                    dataToValidate.params = req.params;
+                }
+            } else {
+                // Legacy: combine all request data
+                dataToValidate = {
+                    ...req.query,
+                    ...req.body,
+                    ...req.params,
+                };
+            }
+
+            const validated = await schema.parseAsync(dataToValidate);
 
             // Attach validated data to request
+            if (validated.body !== undefined) {
+                req.body = validated.body;
+            }
+            if (validated.query !== undefined) {
+                (req as any).query = validated.query;
+            }
+            if (validated.params !== undefined) {
+                (req as any).params = validated.params;
+            }
+
+            // Store all validated data
             (req as any).validated = validated;
 
             next();
@@ -31,9 +60,11 @@ export const validate = (schema: z.ZodSchema) => {
             if (error instanceof z.ZodError) {
                 return res.status(400).json({
                     error: 'Validation error',
+                    message: 'Invalid request data',
                     details: error.errors.map(err => ({
                         field: err.path.join('.'),
                         message: err.message,
+                        code: err.code,
                     })),
                 });
             }

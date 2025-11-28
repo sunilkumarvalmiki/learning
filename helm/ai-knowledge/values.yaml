@@ -1,0 +1,223 @@
+# Default values for ai-knowledge
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  namespace: ai-knowledge
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: "standard"
+
+# Backend API configuration
+backend:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: ai-knowledge/backend
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  env: {}
+  # Add custom environment variables here
+
+# Frontend UI configuration
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ai-knowledge/frontend
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 70
+
+# PostgreSQL configuration (with pgvector)
+postgres:
+  enabled: true
+  image:
+    repository: ankane/pgvector
+    tag: "v0.5.1"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  auth:
+    database: knowledge_db
+    username: postgres
+    # password: set via secrets
+
+# Qdrant vector database configuration
+qdrant:
+  enabled: true
+  image:
+    repository: qdrant/qdrant
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    httpPort: 6333
+    grpcPort: 6334
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# Neo4j graph database configuration
+neo4j:
+  enabled: true
+  image:
+    repository: neo4j
+    tag: "5-community"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    httpPort: 7474
+    boltPort: 7687
+  persistence:
+    data:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+    logs:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  config:
+    pagecacheSize: "512M"
+    heapMaxSize: "1G"
+
+# MinIO object storage configuration
+minio:
+  enabled: true
+  image:
+    repository: minio/minio
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    apiPort: 9000
+    consolePort: 9001
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+  hosts:
+    - host: ai-knowledge.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+    - host: api.ai-knowledge.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: backend
+  tls:
+    - secretName: ai-knowledge-tls
+      hosts:
+        - ai-knowledge.example.com
+        - api.ai-knowledge.example.com
+
+# Security configuration
+security:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    fsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+  alerts:
+    enabled: true
+
+# Backup configuration
+backup:
+  enabled: false
+  schedule: "0 2 * * *"
+  retention: 30

@@ -1,0 +1,115 @@
+# Backend API Alerting Rules
+groups:
+  - name: backend_api_alerts
+    interval: 30s
+    rules:
+      # CRITICAL ALERTS (Page immediately)
+
+      - alert: APIDown
+        expr: up{job="api-backend"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "Backend API is down"
+          description: "Backend API {{ $labels.instance }} has been down for more than 5 minutes."
+          runbook_url: "https://docs.example.com/runbooks/api-down"
+
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{job="api-backend",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="api-backend"}[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+          runbook_url: "https://docs.example.com/runbooks/high-error-rate"
+
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job="api-backend"} > 1073741824 # 1GB
+        for: 10m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High memory usage on API server"
+          description: "Memory usage is {{ $value | humanize1024 }} (threshold: 1GB)"
+          runbook_url: "https://docs.example.com/runbooks/high-memory"
+
+      # WARNING ALERTS (Email/Slack)
+
+      - alert: HighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket{job="api-backend"}[5m])) by (le, method, route)
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High latency detected (p99)"
+          description: "99th percentile latency is {{ $value }}s for {{ $labels.method }} {{ $labels.route }}"
+          runbook_url: "https://docs.example.com/runbooks/high-latency"
+
+      - alert: ModerateErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{job="api-backend",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="api-backend"}[5m]))
+          ) > 0.01
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Moderate error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 1%)"
+
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(db_query_duration_seconds_bucket[5m])) by (le, operation)
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "99th percentile query time is {{ $value }}s for {{ $labels.operation }}"
+
+      - alert: HighRequestRate
+        expr: sum(rate(http_requests_total{job="api-backend"}[1m])) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High request rate detected"
+          description: "Request rate is {{ $value }} req/s (potential DDoS or traffic spike)"
+
+      # INFO ALERTS
+
+      - alert: LowCacheHitRatio
+        expr: |
+          (
+            sum(rate(cache_hits_total[5m]))
+            /
+            sum(rate(cache_requests_total[5m]))
+          ) < 0.3
+        for: 30m
+        labels:
+          severity: info
+          component: cache
+        annotations:
+          summary: "Low cache hit ratio"
+          description: "Cache hit ratio is {{ $value | humanizePercentage }} (threshold: 30%)"

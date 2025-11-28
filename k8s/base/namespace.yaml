@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-knowledge
+  labels:
+    name: ai-knowledge
+    environment: production

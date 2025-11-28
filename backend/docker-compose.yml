@@ -79,6 +79,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis - Caching layer
+  redis:
+    image: redis:7-alpine
+    container_name: knowledge-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Backend API (uncomment when ready)
   # api:
   #   build:
@@ -121,3 +136,4 @@ volumes:
   neo4j_data:
   neo4j_logs:
   minio_data:
+  redis_data:

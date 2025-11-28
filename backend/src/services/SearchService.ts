@@ -1,6 +1,7 @@
 import { AppDataSource } from '../config/database';
 import { Document } from '../models/Document';
 import { embeddingService } from './EmbeddingService';
+import { getCacheService } from './CacheService';
 
 export interface SearchResult {
     id: string;
@@ -20,6 +21,7 @@ export interface SearchOptions {
 
 export class SearchService {
     private documentRepository = AppDataSource.getRepository(Document);
+    private cache = getCacheService();
 
     /**
      * Full-text search using PostgreSQL's tsvector
@@ -30,6 +32,15 @@ export class SearchService {
     ): Promise<{ results: SearchResult[]; total: number }> {
         const limit = options.limit || 20;
         const offset = options.offset || 0;
+
+        // Create cache key
+        const cacheKey = `search:fulltext:${query}:${limit}:${offset}:${options.userId || 'all'}`;
+
+        // Try to get from cache
+        const cached = await this.cache.get<{ results: SearchResult[]; total: number }>(cacheKey);
+        if (cached) {
+            return cached;
+        }
 
         // Use PostgreSQL full-text search with ts_rank
         const qb = this.documentRepository
@@ -75,7 +86,12 @@ export class SearchService {
             highlights: this.extractHighlights(doc.document_content, query),
         }));
 
-        return { results, total };
+        const result = { results, total };
+
+        // Cache for 5 minutes (300 seconds)
+        await this.cache.set(cacheKey, result, { ttl: 300 });
+
+        return result;
     }
 
     /**
@@ -87,6 +103,15 @@ export class SearchService {
         options: SearchOptions = {}
     ): Promise<{ results: SearchResult[]; total: number }> {
         const limit = options.limit || 20;
+
+        // Create cache key
+        const cacheKey = `search:semantic:${query}:${limit}:${options.userId || 'all'}`;
+
+        // Try to get from cache
+        const cached = await this.cache.get<{ results: SearchResult[]; total: number }>(cacheKey);
+        if (cached) {
+            return cached;
+        }
 
         try {
             // Use embedding service to search for similar documents
@@ -139,7 +164,12 @@ export class SearchService {
                 .sort((a, b) => b.score - a.score)
                 .slice(0, limit);
 
-            return { results, total: documentScores.size };
+            const result = { results, total: documentScores.size };
+
+            // Cache for 5 minutes (300 seconds)
+            await this.cache.set(cacheKey, result, { ttl: 300 });
+
+            return result;
         } catch (error) {
             console.error('Semantic search error:', error);
             // Fall back to empty results on error

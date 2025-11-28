@@ -29,4 +29,42 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+
+  // Build optimizations
+  build: {
+    // Target modern browsers for smaller bundles
+    target: 'esnext',
+
+    // Minification
+    minify: 'esbuild',
+
+    // Source maps for production debugging
+    sourcemap: false,
+
+    // Chunk size warnings
+    chunkSizeWarningLimit: 500,
+
+    rollupOptions: {
+      output: {
+        // Manual chunk splitting for better caching
+        manualChunks: {
+          // Vendor chunk for React and related libraries
+          'vendor-react': ['react', 'react-dom'],
+          // Icons library
+          'vendor-icons': ['lucide-react'],
+        },
+
+        // Optimize chunk file names
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
+
+    // CSS code splitting
+    cssCodeSplit: true,
+
+    // Reduce bundle size by removing unused code
+    reportCompressedSize: true,
+  },
 }));

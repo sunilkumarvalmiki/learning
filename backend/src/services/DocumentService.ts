@@ -3,12 +3,14 @@ import { Document, DocumentStatus, FileType } from '../models/Document';
 import { minioClient } from '../scripts/init-minio';
 import { documentProcessingQueue } from './DocumentProcessingQueue';
 import { embeddingService } from './EmbeddingService';
+import { getCacheService } from './CacheService';
 import config from '../config';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
 export class DocumentService {
     private documentRepository = AppDataSource.getRepository(Document);
+    private cache = getCacheService();
 
     /**
      * Upload a document file to MinIO and create database record
@@ -126,13 +128,30 @@ export class DocumentService {
      * Get a single document by ID
      */
     async getDocumentById(documentId: string, userId: string): Promise<Document | null> {
-        return this.documentRepository.findOne({
+        // Create cache key
+        const cacheKey = `document:${documentId}:${userId}`;
+
+        // Try to get from cache
+        const cached = await this.cache.get<Document>(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        // Fetch from database
+        const document = await this.documentRepository.findOne({
             where: {
                 id: documentId,
                 userId,
                 deletedAt: null as any, // TypeORM typing issue with null
             },
         });
+
+        // Cache for 30 minutes (1800 seconds)
+        if (document) {
+            await this.cache.set(cacheKey, document, { ttl: 1800 });
+        }
+
+        return document;
     }
 
     /**
@@ -147,6 +166,9 @@ export class DocumentService {
 
         // Soft delete in database
         await this.documentRepository.softDelete(documentId);
+
+        // Invalidate cache
+        await this.cache.delete(`document:${documentId}:${userId}`);
 
         // Delete embeddings from Qdrant
         try {
@@ -180,6 +202,9 @@ export class DocumentService {
         if (updates.summary) document.summary = updates.summary;
 
         await this.documentRepository.save(document);
+
+        // Invalidate cache
+        await this.cache.delete(`document:${documentId}:${userId}`);
 
         return document;
     }

@@ -4,12 +4,21 @@ import { uploadSingle, handleUploadError } from '../middleware/upload';
 import { validate, documentListQuerySchema } from '../middleware/validation';
 import { optionalAuth } from '../middleware/auth';
 import { documentProcessingQueue } from '../services/DocumentProcessingQueue';
+import { uploadLimiter, standardLimiter } from '../middleware/rateLimiter';
+import {
+    documentListQuerySchema as newDocumentListQuerySchema,
+    documentIdParamSchema,
+    documentUpdateSchema,
+} from '../validation/schemas';
 
 const router = Router();
 const documentController = new DocumentController();
 
 // Apply optional authentication to all routes for backwards compatibility
 router.use(optionalAuth);
+
+// Apply standard rate limiting to all document endpoints
+router.use(standardLimiter);
 
 /**
  * GET /api/v1/documents/queue/status
@@ -25,6 +34,7 @@ router.get('/queue/status', (_req, res) => {
  */
 router.post(
     '/upload',
+    uploadLimiter,
     uploadSingle,
     handleUploadError,
     documentController.upload.bind(documentController)
@@ -36,7 +46,7 @@ router.post(
  */
 router.get(
     '/',
-    validate(documentListQuerySchema),
+    validate(newDocumentListQuerySchema),
     documentController.list.bind(documentController)
 );
 
@@ -46,6 +56,7 @@ router.get(
  */
 router.get(
     '/:id',
+    validate(documentIdParamSchema),
     documentController.getById.bind(documentController)
 );
 
@@ -55,6 +66,7 @@ router.get(
  */
 router.patch(
     '/:id',
+    validate(documentUpdateSchema),
     documentController.update.bind(documentController)
 );
 
@@ -64,6 +76,7 @@ router.patch(
  */
 router.delete(
     '/:id',
+    validate(documentIdParamSchema),
     documentController.delete.bind(documentController)
 );
 

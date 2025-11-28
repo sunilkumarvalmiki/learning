@@ -16,6 +16,9 @@ interface Config {
         password: string;
     };
 
+    // Redis
+    redisUrl: string;
+
     // Qdrant
     qdrant: {
         url: string;
@@ -71,6 +74,8 @@ const config: Config = {
         username: process.env.POSTGRES_USER || 'postgres',
         password: process.env.POSTGRES_PASSWORD || 'postgres',
     },
+
+    redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
 
     qdrant: {
         url: process.env.QDRANT_URL || 'http://localhost:6333',

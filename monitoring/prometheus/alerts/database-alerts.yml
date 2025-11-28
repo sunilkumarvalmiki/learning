@@ -1,0 +1,98 @@
+# Database Alerting Rules
+groups:
+  - name: database_alerts
+    interval: 30s
+    rules:
+      # PostgreSQL Alerts
+
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: postgres
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL instance {{ $labels.instance }} is down"
+          runbook_url: "https://docs.example.com/runbooks/postgres-down"
+
+      - alert: PostgreSQLHighConnections
+        expr: |
+          sum(pg_stat_activity_count)
+          /
+          pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: postgres
+        annotations:
+          summary: "PostgreSQL connection pool near limit"
+          description: "Connection usage is {{ $value | humanizePercentage }} of max"
+
+      - alert: PostgreSQLSlowQueries
+        expr: pg_stat_activity_max_tx_duration > 60
+        for: 5m
+        labels:
+          severity: warning
+          component: postgres
+        annotations:
+          summary: "PostgreSQL has slow queries"
+          description: "Longest running query: {{ $value }}s"
+
+      - alert: PostgreSQLDeadlocks
+        expr: rate(pg_stat_database_deadlocks[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: postgres
+        annotations:
+          summary: "PostgreSQL deadlocks detected"
+          description: "Deadlock rate: {{ $value }} per second"
+
+      # Qdrant Vector Database Alerts
+
+      - alert: QdrantDown
+        expr: up{job="qdrant"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: qdrant
+        annotations:
+          summary: "Qdrant vector database is down"
+          description: "Qdrant instance {{ $labels.instance }} is down"
+          runbook_url: "https://docs.example.com/runbooks/qdrant-down"
+
+      - alert: QdrantHighMemory
+        expr: qdrant_app_memory_bytes > 2147483648 # 2GB
+        for: 10m
+        labels:
+          severity: warning
+          component: qdrant
+        annotations:
+          summary: "Qdrant high memory usage"
+          description: "Memory usage: {{ $value | humanize1024 }}"
+
+      # Neo4j Graph Database Alerts
+
+      - alert: Neo4jDown
+        expr: up{job="neo4j"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: neo4j
+        annotations:
+          summary: "Neo4j graph database is down"
+          description: "Neo4j instance {{ $labels.instance }} is down"
+
+      - alert: Neo4jHighPageCacheMiss
+        expr: |
+          rate(neo4j_page_cache_page_faults_total[5m])
+          /
+          rate(neo4j_page_cache_hits_total[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: neo4j
+        annotations:
+          summary: "Neo4j high page cache miss rate"
+          description: "Cache miss rate: {{ $value | humanizePercentage }}"

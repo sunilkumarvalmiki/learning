@@ -1,17 +1,60 @@
 import 'reflect-metadata';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
+import compression from 'compression';
 import config from './config';
 import { initializeDatabase } from './config/database';
+import { initializeRedis } from './config/redis';
+import { configureSecurityHeaders, corsOptions, devCorsOptions } from './middleware/securityHeaders';
+import { setupSwagger } from './config/swagger';
 
 const app: Application = express();
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+// Performance monitoring middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        if (duration > 1000) {
+            console.warn(`Slow request: ${req.method} ${req.path} - ${duration}ms`);
+        }
+    });
+    next();
+});
+
+// Compression middleware - compress all responses
+app.use(
+    compression({
+        filter: (req, res) => {
+            // Don't compress if client doesn't support it
+            if (req.headers['x-no-compression']) {
+                return false;
+            }
+            // Use compression for all responses
+            return compression.filter(req, res);
+        },
+        // Compression level (0-9): 6 is balanced between speed and compression ratio
+        level: 6,
+        // Only compress responses larger than 1KB
+        threshold: 1024,
+    })
+);
+
+// Enhanced security headers (Helmet.js with custom config)
+configureSecurityHeaders(app);
+
+// CORS configuration
+const corsConfig = config.nodeEnv === 'production' ? corsOptions : devCorsOptions;
+app.use(cors(corsConfig));
+
+// Parse JSON bodies with size limit
+app.use(express.json({ limit: '10mb' }));
+
+// Parse URL-encoded bodies with size limit
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Setup Swagger/OpenAPI documentation
+setupSwagger(app);
 
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
@@ -27,15 +70,18 @@ app.get('/health', (_req: Request, res: Response) => {
 import authRoutes from './routes/auth';
 import documentRoutes from './routes/documents';
 import searchRoutes from './routes/search';
+import gdprRoutes from './routes/gdpr';
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/documents', documentRoutes);
 app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/gdpr', gdprRoutes);
 
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.json({
         message: 'AI Knowledge Management System API',
         version: '1.0.0',
+        documentation: '/api-docs',
         endpoints: {
             health: '/health',
             auth: {
@@ -77,6 +123,13 @@ const startServer = async () => {
         // Initialize database connection
         await initializeDatabase();
 
+        // Initialize Redis connection (non-blocking)
+        try {
+            await initializeRedis();
+        } catch (error) {
+            console.warn('Redis initialization failed (caching disabled):', error);
+        }
+
         // Start Express server
         app.listen(config.port, () => {
             console.log(`
@@ -86,6 +139,8 @@ const startServer = async () => {
 ║  Environment: ${config.nodeEnv.padEnd(30)} ║
 ║  Port:        ${String(config.port).padEnd(30)} ║
 ║  API:         http://localhost:${config.port}${' '.repeat(14)} ║
+║  Compression: Enabled (gzip/brotli)${' '.repeat(8)} ║
+║  Caching:     Redis                        ║
 ╚════════════════════════════════════════════╝
       `);
         });

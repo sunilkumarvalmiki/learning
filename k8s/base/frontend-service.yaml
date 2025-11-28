@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-ui
+  namespace: ai-knowledge
+  labels:
+    app: frontend-ui
+    component: ui
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend-ui
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP

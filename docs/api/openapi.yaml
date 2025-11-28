@@ -1,0 +1,1100 @@
+openapi: 3.1.0
+info:
+  title: AI Knowledge Management System API
+  version: 1.0.0
+  description: |
+    # AI Knowledge Management System API
+
+    A comprehensive AI-powered knowledge management system that enables users to:
+    - Upload and process documents (PDF, DOCX, images, videos, audio)
+    - Perform semantic, keyword, and hybrid search
+    - Generate AI-powered summaries and transformations
+    - Manage tags, workspaces, and knowledge graphs
+
+    ## Features
+    - **Multi-format document processing**: Support for 15+ file formats with OCR
+    - **Advanced search**: Semantic vector search + full-text search
+    - **AI transformations**: Multi-level understanding (5-year-old to PhD complexity)
+    - **Collaboration**: Workspaces and team management
+    - **Self-hosted**: Deploy on-premises or in the cloud
+
+    ## Authentication
+    All protected endpoints require a JWT Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+
+    Obtain tokens via the `/api/v1/auth/login` endpoint.
+
+  contact:
+    name: API Support
+    url: https://github.com/sunilkumarvalmiki/learning
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.knowledge-system.com/v1
+    description: Production server (self-hosted)
+
+tags:
+  - name: Authentication
+    description: User authentication and profile management
+  - name: Documents
+    description: Document upload, processing, and management
+  - name: Search
+    description: Full-text, semantic, and hybrid search endpoints
+  - name: Tags
+    description: Tag management and organization
+  - name: Health
+    description: System health and status checks
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed"
+        details:
+          type: object
+          additionalProperties: true
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        fullName:
+          type: string
+          nullable: true
+          example: "John Doe"
+        role:
+          type: string
+          enum: [free, pro, team_member, team_admin, enterprise]
+          example: "free"
+        storageUsedBytes:
+          type: integer
+          format: int64
+          example: 1073741824
+        storageLimitBytes:
+          type: integer
+          format: int64
+          example: 5368709120
+        emailVerified:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-25T10:30:00Z"
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2025-11-28T15:45:00Z"
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "newuser@example.com"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "SecurePass123!"
+        fullName:
+          type: string
+          example: "Jane Smith"
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "SecurePass123!"
+
+    AuthResponse:
+      type: object
+      required:
+        - token
+        - user
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        user:
+          $ref: '#/components/schemas/User'
+
+    Document:
+      type: object
+      required:
+        - id
+        - userId
+        - title
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440000"
+        userId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        workspaceId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "770e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          example: "Machine Learning Research Paper"
+        content:
+          type: string
+          nullable: true
+          description: "Extracted markdown content"
+          example: "# Introduction\n\nThis paper discusses..."
+        summary:
+          type: string
+          nullable: true
+          description: "AI-generated summary"
+          example: "This research explores the application of neural networks..."
+        fileName:
+          type: string
+          nullable: true
+          example: "ml-research.pdf"
+        fileSizeBytes:
+          type: integer
+          format: int64
+          nullable: true
+          example: 2048576
+        fileType:
+          type: string
+          enum: [pdf, docx, txt, md, image, video, audio, other]
+          example: "pdf"
+        mimeType:
+          type: string
+          nullable: true
+          example: "application/pdf"
+        status:
+          type: string
+          enum: [uploading, processing, completed, failed]
+          example: "completed"
+        processingError:
+          type: string
+          nullable: true
+          example: null
+        ocrConfidence:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 1
+          example: 0.95
+        language:
+          type: string
+          example: "en"
+        readingTimeMinutes:
+          type: integer
+          nullable: true
+          example: 15
+        complexityScore:
+          type: number
+          format: float
+          nullable: true
+          example: 12.5
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["machine-learning", "research", "neural-networks"]
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-28T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-11-28T10:35:00Z"
+
+    DocumentListResponse:
+      type: object
+      required:
+        - data
+        - pagination
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        pagination:
+          type: object
+          required:
+            - total
+            - page
+            - limit
+            - pages
+          properties:
+            total:
+              type: integer
+              example: 150
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 20
+            pages:
+              type: integer
+              example: 8
+
+    UploadResponse:
+      type: object
+      required:
+        - documentId
+        - status
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          example: "880e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          enum: [uploading, processing]
+          example: "processing"
+        message:
+          type: string
+          example: "Document uploaded successfully and processing started"
+
+    SearchResult:
+      type: object
+      required:
+        - id
+        - title
+        - score
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          example: "Introduction to Neural Networks"
+        snippet:
+          type: string
+          example: "A neural network is a series of algorithms that..."
+        score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          example: 0.92
+        highlights:
+          type: array
+          items:
+            type: string
+          example: ["<mark>neural networks</mark> are computational models..."]
+        fileType:
+          type: string
+          example: "pdf"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-20T10:30:00Z"
+
+    SearchResponse:
+      type: object
+      required:
+        - results
+        - total
+        - tookMs
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+        total:
+          type: integer
+          example: 145
+        tookMs:
+          type: integer
+          description: "Search execution time in milliseconds"
+          example: 234
+        query:
+          type: string
+          example: "neural networks"
+
+    SearchSuggestion:
+      type: object
+      required:
+        - suggestion
+        - count
+      properties:
+        suggestion:
+          type: string
+          example: "neural networks architecture"
+        count:
+          type: integer
+          description: "Number of times this query was searched"
+          example: 15
+        lastSearched:
+          type: string
+          format: date-time
+          example: "2025-11-27T14:20:00Z"
+
+    QueueStatus:
+      type: object
+      required:
+        - pending
+        - processing
+        - completed
+        - failed
+      properties:
+        pending:
+          type: integer
+          example: 5
+        processing:
+          type: integer
+          example: 2
+        completed:
+          type: integer
+          example: 143
+        failed:
+          type: integer
+          example: 1
+        workers:
+          type: integer
+          example: 3
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+        - uptime
+        - environment
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, down]
+          example: "ok"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-11-28T16:30:00Z"
+        uptime:
+          type: number
+          format: float
+          description: "Server uptime in seconds"
+          example: 86400.5
+        environment:
+          type: string
+          example: "production"
+        version:
+          type: string
+          example: "1.0.0"
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the API is running and responsive
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account with email and password
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              basicRegistration:
+                summary: Basic registration
+                value:
+                  email: "newuser@example.com"
+                  password: "SecurePass123!"
+              fullRegistration:
+                summary: Registration with full name
+                value:
+                  email: "jane.smith@example.com"
+                  password: "SecurePass456!"
+                  fullName: "Jane Smith"
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Bad Request"
+                message: "Email already exists"
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticate user and receive JWT token
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Unauthorized"
+                message: "Invalid email or password"
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Retrieve the authenticated user's profile information
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/profile:
+    patch:
+      tags:
+        - Authentication
+      summary: Update user profile
+      description: Update the authenticated user's profile information
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: "John Updated Doe"
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change password
+      description: Change the authenticated user's password
+      operationId: changePassword
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  format: password
+                  example: "OldPass123!"
+                newPassword:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "NewSecurePass456!"
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password changed successfully"
+        '401':
+          description: Invalid current password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/upload:
+    post:
+      tags:
+        - Documents
+      summary: Upload document
+      description: |
+        Upload a new document for processing. Supports multiple file formats:
+        - Documents: PDF, DOCX, TXT, Markdown
+        - Images: PNG, JPG, TIFF (with OCR)
+        - Videos: MP4, AVI, MKV (extract audio → transcribe)
+        - Audio: MP3, WAV, FLAC (transcribe)
+
+        Maximum file size: 10GB
+      operationId: uploadDocument
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Document file to upload"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: "Optional tags for the document"
+                  example: ["research", "machine-learning"]
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          description: Invalid file or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents:
+    get:
+      tags:
+        - Documents
+      summary: List documents
+      description: Retrieve a paginated list of documents with optional filters
+      operationId: listDocuments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-indexed)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by processing status
+          schema:
+            type: string
+            enum: [uploading, processing, completed, failed]
+        - name: fileType
+          in: query
+          description: Filter by file type
+          schema:
+            type: string
+            enum: [pdf, docx, txt, md, image, video, audio, other]
+        - name: sortBy
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, title, fileSize]
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{id}:
+    get:
+      tags:
+        - Documents
+      summary: Get document by ID
+      description: Retrieve a single document's details
+      operationId: getDocumentById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Document UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Document retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags:
+        - Documents
+      summary: Update document
+      description: Update document metadata (title, tags, etc.)
+      operationId: updateDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Document UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Updated Document Title"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  example: ["updated-tag", "new-tag"]
+      responses:
+        '200':
+          description: Document updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Documents
+      summary: Delete document
+      description: Soft delete a document (can be recovered)
+      operationId: deleteDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Document UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Document deleted successfully
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/queue/status:
+    get:
+      tags:
+        - Documents
+      summary: Get queue status
+      description: Get the status of the document processing queue
+      operationId: getQueueStatus
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Queue status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueStatus'
+
+  /search:
+    get:
+      tags:
+        - Search
+      summary: Full-text search
+      description: Search documents using PostgreSQL full-text search
+      operationId: fullTextSearch
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+            minLength: 1
+            example: "neural networks"
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Search completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /search/semantic:
+    get:
+      tags:
+        - Search
+      summary: Semantic search
+      description: |
+        Search documents using vector embeddings and semantic similarity.
+        Uses Qdrant vector database for fast approximate nearest neighbor search.
+      operationId: semanticSearch
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+            minLength: 1
+            example: "how do transformers work"
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: scoreThreshold
+          in: query
+          description: Minimum similarity score (0-1)
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 1
+            default: 0.7
+      responses:
+        '200':
+          description: Search completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /search/hybrid:
+    get:
+      tags:
+        - Search
+      summary: Hybrid search
+      description: |
+        Combine full-text and semantic search for best results.
+        Uses BM25 ranking for keywords and HNSW for semantic similarity.
+      operationId: hybridSearch
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+            minLength: 1
+            example: "deep learning applications"
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: keywordWeight
+          in: query
+          description: Weight for keyword search (0-1, default 0.3)
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 1
+            default: 0.3
+        - name: semanticWeight
+          in: query
+          description: Weight for semantic search (0-1, default 0.7)
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 1
+            default: 0.7
+      responses:
+        '200':
+          description: Search completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Invalid query or weights don't sum to 1.0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /search/suggestions:
+    get:
+      tags:
+        - Search
+      summary: Get search suggestions
+      description: Get autocomplete suggestions based on search history
+      operationId: getSearchSuggestions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Partial search query
+          schema:
+            type: string
+            minLength: 1
+            example: "neur"
+        - name: limit
+          in: query
+          description: Maximum number of suggestions
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+      responses:
+        '200':
+          description: Suggestions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchSuggestion'
+        '400':
+          description: Invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
