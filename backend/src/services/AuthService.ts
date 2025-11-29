@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/database';
 import { User, UserRole } from '../models/User';
-import { generateToken, generateRefreshToken } from '../middleware/auth';
+import { generateToken, generateRefreshToken, verifyRefreshToken } from '../middleware/auth';
 
 export interface RegisterInput {
     email: string;
@@ -20,13 +20,12 @@ export interface AuthResponse {
 }
 
 export class AuthService {
-    private userRepository = AppDataSource.getRepository(User);
-
     /**
      * Register a new user
      */
     async register(input: RegisterInput): Promise<AuthResponse> {
-        const existingUser = await this.userRepository.findOne({
+        const userRepository = AppDataSource.getRepository(User);
+        const existingUser = await userRepository.findOne({
             where: { email: input.email.toLowerCase() }
         });
 
@@ -42,7 +41,7 @@ export class AuthService {
             throw new Error('Password must be at least 8 characters with uppercase, lowercase, and number');
         }
 
-        const user = this.userRepository.create({
+        const user = userRepository.create({
             email: input.email.toLowerCase(),
             passwordHash: input.password, // Will be hashed by @BeforeInsert
             fullName: input.fullName,
@@ -50,7 +49,7 @@ export class AuthService {
             emailVerified: false
         });
 
-        await this.userRepository.save(user);
+        await userRepository.save(user);
 
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
@@ -66,7 +65,8 @@ export class AuthService {
      * Login user
      */
     async login(input: LoginInput): Promise<AuthResponse> {
-        const user = await this.userRepository
+        const userRepository = AppDataSource.getRepository(User);
+        const user = await userRepository
             .createQueryBuilder('user')
             .addSelect('user.passwordHash')
             .where('user.email = :email', { email: input.email.toLowerCase() })
@@ -84,7 +84,7 @@ export class AuthService {
 
         // Update last login
         user.lastLoginAt = new Date();
-        await this.userRepository.save(user);
+        await userRepository.save(user);
 
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
@@ -100,7 +100,7 @@ export class AuthService {
      * Get user by ID
      */
     async getUserById(userId: string): Promise<User | null> {
-        return this.userRepository.findOne({
+        return AppDataSource.getRepository(User).findOne({
             where: { id: userId }
         });
     }
@@ -112,7 +112,8 @@ export class AuthService {
         userId: string,
         updates: { fullName?: string }
     ): Promise<User> {
-        const user = await this.userRepository.findOne({
+        const userRepository = AppDataSource.getRepository(User);
+        const user = await userRepository.findOne({
             where: { id: userId }
         });
 
@@ -124,7 +125,7 @@ export class AuthService {
             user.fullName = updates.fullName;
         }
 
-        await this.userRepository.save(user);
+        await userRepository.save(user);
         return user;
     }
 
@@ -136,7 +137,8 @@ export class AuthService {
         currentPassword: string,
         newPassword: string
     ): Promise<void> {
-        const user = await this.userRepository
+        const userRepository = AppDataSource.getRepository(User);
+        const user = await userRepository
             .createQueryBuilder('user')
             .addSelect('user.passwordHash')
             .where('user.id = :id', { id: userId })
@@ -156,7 +158,30 @@ export class AuthService {
         }
 
         user.passwordHash = newPassword; // Will be hashed by @BeforeUpdate
-        await this.userRepository.save(user);
+        await userRepository.save(user);
+    }
+
+    /**
+     * Refresh access token
+     */
+    async refreshToken(token: string): Promise<{ token: string }> {
+        try {
+            const decoded = verifyRefreshToken(token);
+            const user = await AppDataSource.getRepository(User).findOneBy({ id: decoded.userId });
+
+            if (!user) {
+                throw new Error('Invalid refresh token');
+            }
+
+            // In a real implementation, we would check if the refresh token is in a whitelist/blacklist
+            // or if the token version matches the user's token version.
+
+            const newToken = generateToken(user);
+
+            return { token: newToken };
+        } catch (error) {
+            throw new Error('Invalid refresh token');
+        }
     }
 
     /**

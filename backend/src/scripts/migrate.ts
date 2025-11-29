@@ -22,6 +22,7 @@ async function runMigrations() {
             '001_initial_schema.sql',
             // '005_documents_simple.sql', // Skip if using full schema
             '004_seed_data.sql',
+            '006_task_management.sql',
         ];
 
         for (const migrationFile of migrations) {

@@ -164,13 +164,22 @@ export const generateToken = (user: User): string => {
  * Generate refresh token (longer expiry)
  */
 export const generateRefreshToken = (user: User): string => {
-    const payload: JwtPayload = {
-        userId: user.id,
-        email: user.email,
-        role: user.role
-    };
-
-    return jwt.sign(payload, config.jwt.secret, {
-        expiresIn: '7d'
-    } as jwt.SignOptions);
+    return jwt.sign(
+        { userId: user.id, email: user.email, type: 'refresh' },
+        config.jwt.secret, // Corrected to use config.jwt.secret
+        { expiresIn: '7d' }
+    );
 };
+
+export const verifyRefreshToken = (token: string): any => {
+    try {
+        const decoded = jwt.verify(token, config.jwt.secret) as any; // Corrected to use config.jwt.secret
+        if (decoded.type !== 'refresh') {
+            throw new Error('Invalid token type');
+        }
+        return decoded;
+    } catch (error) {
+        throw new Error('Invalid refresh token');
+    }
+};
+

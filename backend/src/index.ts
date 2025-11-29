@@ -7,8 +7,12 @@ import { initializeDatabase } from './config/database';
 import { initializeRedis } from './config/redis';
 import { configureSecurityHeaders, corsOptions, devCorsOptions } from './middleware/securityHeaders';
 import { setupSwagger } from './config/swagger';
+import { standardLimiter, authLimiter } from './middleware/rateLimiter';
 
 const app: Application = express();
+
+// Apply global rate limiter to all requests
+app.use(standardLimiter);
 
 // Performance monitoring middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -41,7 +45,7 @@ app.use(
 );
 
 // Enhanced security headers (Helmet.js with custom config)
-configureSecurityHeaders(app);
+configureSecurityHeaders(app as any);
 
 // CORS configuration
 const corsConfig = config.nodeEnv === 'production' ? corsOptions : devCorsOptions;
@@ -71,11 +75,22 @@ import authRoutes from './routes/auth';
 import documentRoutes from './routes/documents';
 import searchRoutes from './routes/search';
 import gdprRoutes from './routes/gdpr';
+import taskRoutes from './routes/tasks';
 
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './swagger/swagger.config';
+
+import { metricsMiddleware, getMetrics } from './monitoring/metrics';
+
+app.use(metricsMiddleware);
+app.get('/metrics', getMetrics);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/documents', documentRoutes);
 app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/gdpr', gdprRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.json({

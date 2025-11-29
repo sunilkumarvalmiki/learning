@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { SearchController } from '../controllers/SearchController';
 import { validate } from '../middleware/validation';
 import { searchLimiter } from '../middleware/rateLimiter';
+import { authenticate } from '../middleware/auth';
 import {
     searchQuerySchema,
     semanticSearchQuerySchema,
@@ -16,41 +17,120 @@ const searchController = new SearchController();
 router.use(searchLimiter);
 
 /**
- * GET /api/v1/search?q=query
- * Full-text search using PostgreSQL
+ * @swagger
+ * tags:
+ *   name: Search
+ *   description: Search functionality
+ */
+
+/**
+ * @swagger
+ * /search:
+ *   get:
+ *     summary: Full-text search
+ *     tags: [Search]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Search results
+ *       401:
+ *         description: Unauthorized
  */
 router.get(
     '/',
+    authenticate,
     validate(searchQuerySchema),
     searchController.fullText.bind(searchController)
 );
 
 /**
- * GET /api/v1/search/semantic?q=query
- * Semantic search using vector embeddings (Qdrant)
+ * @swagger
+ * /search/semantic:
+ *   get:
+ *     summary: Semantic search
+ *     tags: [Search]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Search results
+ *       401:
+ *         description: Unauthorized
  */
 router.get(
     '/semantic',
+    authenticate,
     validate(semanticSearchQuerySchema),
     searchController.semantic.bind(searchController)
 );
 
 /**
- * GET /api/v1/search/hybrid?q=query
- * Hybrid search combining full-text and semantic
+ * @swagger
+ * /search/hybrid:
+ *   get:
+ *     summary: Hybrid search
+ *     tags: [Search]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Search results
+ *       401:
+ *         description: Unauthorized
  */
 router.get(
     '/hybrid',
+    authenticate,
     validate(hybridSearchQuerySchema),
     searchController.hybrid.bind(searchController)
 );
 
 /**
- * GET /api/v1/search/suggestions?q=partial
- * Get search suggestions based on query history
+ * @swagger
+ * /search/suggestions:
+ *   get:
+ *     summary: Get search suggestions
+ *     tags: [Search]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of suggestions
+ *       401:
+ *         description: Unauthorized
  */
 router.get(
     '/suggestions',
+    authenticate,
     validate(suggestionsQuerySchema),
     searchController.suggestions.bind(searchController)
 );

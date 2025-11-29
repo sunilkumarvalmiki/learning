@@ -193,4 +193,57 @@ export class AuthController {
             next(error);
         }
     }
+    /**
+     * POST /api/v1/auth/refresh-token
+     * Refresh access token
+     */
+    async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { refreshToken } = req.body;
+
+            if (!refreshToken) {
+                res.status(400).json({
+                    error: 'Validation error',
+                    message: 'Refresh token is required'
+                });
+                return;
+            }
+
+            const result = await authService.refreshToken(refreshToken);
+
+            res.status(200).json({
+                message: 'Token refreshed successfully',
+                ...result
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.message === 'Invalid refresh token') {
+                    res.status(401).json({
+                        error: 'Unauthorized',
+                        message: error.message
+                    });
+                    return;
+                }
+            }
+            next(error);
+        }
+    }
+
+    /**
+     * POST /api/v1/auth/logout
+     * Logout user
+     */
+    async logout(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            // In a stateless JWT setup, logout is client-side (clearing token).
+            // If using a blacklist or refresh token database, invalidate it here.
+            // For now, we just return success.
+
+            res.status(200).json({
+                message: 'Logout successful'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
