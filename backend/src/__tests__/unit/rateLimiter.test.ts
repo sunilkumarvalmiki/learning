@@ -39,6 +39,8 @@ describe('Rate Limiter Middleware Unit Tests', () => {
                 ip: '127.0.0.1',
                 method: 'GET',
                 path: '/test',
+                headers: {},
+                get: jest.fn().mockReturnValue(undefined),
             };
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -49,11 +51,36 @@ describe('Rate Limiter Middleware Unit Tests', () => {
             mockNext = jest.fn();
         });
 
-        it('should set rate limit headers on requests', () => {
-            standardLimiter(mockRequest as Request, mockResponse as Response, mockNext);
+        it('should set rate limit headers on requests', async () => {
+            // Use a Promise-based approach to properly handle the async rate limiter
+            const callPromise = new Promise<void>((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    // If rate limiter hasn't called next within timeout, 
+                    // this is expected behavior for rate limiting middleware
+                    resolve();
+                }, 500);
 
-            // Rate limiters should set headers
-            // Note: Actual header setting happens in the library
+                const next = (err?: any) => {
+                    clearTimeout(timeoutId);
+                    if (err) {
+                        reject(err);
+                    } else {
+                        mockNext();
+                        resolve();
+                    }
+                };
+                
+                try {
+                    standardLimiter(mockRequest as Request, mockResponse as Response, next);
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    reject(error);
+                }
+            });
+
+            await callPromise;
+
+            // Rate limiters should call next() on the first request (not rate limited)
             expect(mockNext).toHaveBeenCalled();
         });
     });

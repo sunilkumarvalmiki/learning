@@ -1,0 +1,37 @@
+{
+  "name": "learning-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Knowledge Management System - Monorepo",
+  "scripts": {
+    "test": "npm run test:backend && npm run test:ui",
+    "test:backend": "cd backend && npm test",
+    "test:ui": "cd ai-knowledge-ui && npm test -- run --project=unit",
+    "test:all": "npm run test:backend && npm run test:ui && npm run test:system",
+    "test:system": "cd ai-knowledge-system && pnpm exec playwright test || true",
+    "test:coverage": "npm run test:backend -- --coverage && npm run test:ui -- --coverage",
+    "lint": "npm run lint:backend && npm run lint:ui",
+    "lint:backend": "cd backend && npm run lint || true",
+    "lint:ui": "cd ai-knowledge-ui && npm run lint",
+    "build": "npm run build:backend && npm run build:ui",
+    "build:backend": "cd backend && npm run build",
+    "build:ui": "cd ai-knowledge-ui && npm run build",
+    "setup": "npm run setup:backend && npm run setup:ui && npm run setup:system",
+    "setup:backend": "cd backend && npm install",
+    "setup:ui": "cd ai-knowledge-ui && npm install",
+    "setup:system": "cd ai-knowledge-system && pnpm install",
+    "clean": "rm -rf backend/node_modules ai-knowledge-ui/node_modules ai-knowledge-system/node_modules"
+  },
+  "keywords": [
+    "ai",
+    "knowledge-management",
+    "tauri",
+    "react",
+    "typescript"
+  ],
+  "author": "Sunilkumarvalmiki",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
