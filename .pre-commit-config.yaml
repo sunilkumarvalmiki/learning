@@ -1,0 +1,69 @@
+# Pre-commit Configuration for AI Knowledge Management System
+# https://pre-commit.com
+
+# This runs tests and linting before every commit
+# Install: pre-commit install
+
+default_stages: [pre-commit]
+fail_fast: false
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+
+  # TypeScript/JavaScript formatting
+  - repo: local
+    hooks:
+      # Backend linting
+      - id: backend-lint
+        name: Backend Lint
+        entry: bash -c 'cd backend && npm run lint --if-present'
+        language: system
+        files: ^backend/.*\.(ts|js)$
+        pass_filenames: false
+
+      # Backend tests (quick unit tests only)
+      - id: backend-tests
+        name: Backend Unit Tests
+        entry: bash -c 'cd backend && npm test -- --onlyChanged'
+        language: system
+        files: ^backend/.*\.(ts|js)$
+        pass_filenames: false
+        stages: [pre-push]
+
+      # UI linting
+      - id: ui-lint
+        name: UI Component Lint
+        entry: bash -c 'cd ai-knowledge-ui && npm run lint'
+        language: system
+        files: ^ai-knowledge-ui/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+
+      # UI type checking
+      - id: ui-typecheck
+        name: UI Type Check
+        entry: bash -c 'cd ai-knowledge-ui && npx tsc --noEmit'
+        language: system
+        files: ^ai-knowledge-ui/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      # Check for console.log statements
+      - id: no-console-log
+        name: No console.log
+        entry: 'console\.(log|debug|info)\('
+        language: pygrep
+        files: \.(ts|tsx|js|jsx)$
+        exclude: (test|spec|\.test\.|\.spec\.)
+
+# To install: pip install pre-commit && pre-commit install
+# To run manually: pre-commit run --all-files

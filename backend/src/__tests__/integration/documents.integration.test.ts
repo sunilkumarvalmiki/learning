@@ -1,76 +1,84 @@
 import request from 'supertest';
 import express from 'express';
-import { initializeTestDb, closeTestDb, getDataSource } from '../helpers/testDb';
-import documentRoutes from '../../routes/documents';
-import { DocumentService } from '../../services/DocumentService';
-import { User, UserRole } from '../../models/User';
+import { initializeTestDb, closeTestDb, getDataSource, isTestDbAvailable } from '../helpers/testDb';
 
-// Mock the database config
-jest.mock('../../config/database', () => ({
-    get AppDataSource() {
-        return getDataSource();
-    },
-}));
+// Skip tests if pg-mem is not available
+const describeIfDbAvailable = isTestDbAvailable() ? describe : describe.skip;
 
-// Mock config
-jest.mock('../../config', () => ({
-    jwt: { secret: 'test-secret', expiresIn: '1h' },
-    minio: { endPoint: 'localhost', port: 9000, useSSL: false, accessKey: 'test', secretKey: 'test' },
-}));
-
-// Mock MinIO client
-jest.mock('minio', () => ({
-    Client: jest.fn().mockImplementation(() => ({
-        bucketExists: jest.fn().mockResolvedValue(true),
-        makeBucket: jest.fn().mockResolvedValue(true),
-        putObject: jest.fn().mockResolvedValue({ etag: 'test-etag' }),
-        getObject: jest.fn().mockResolvedValue({
-            pipe: jest.fn(),
-            on: jest.fn(),
-        }),
-        removeObject: jest.fn().mockResolvedValue(true),
-    })),
-}));
-
-// Mock Neo4j driver
-jest.mock('neo4j-driver', () => ({
-    driver: jest.fn().mockReturnValue({
-        session: jest.fn().mockReturnValue({
-            run: jest.fn().mockResolvedValue({ records: [] }),
-            close: jest.fn(),
-        }),
-        close: jest.fn(),
-    }),
-    auth: { basic: jest.fn() },
-}));
-
-// Mock Qdrant client
-jest.mock('@qdrant/js-client-rest', () => ({
-    QdrantClient: jest.fn().mockImplementation(() => ({
-        getCollections: jest.fn().mockResolvedValue({ collections: [] }),
-        createCollection: jest.fn().mockResolvedValue(true),
-        upsert: jest.fn().mockResolvedValue(true),
-        search: jest.fn().mockResolvedValue([]),
-    })),
-}));
-
-const app = express();
-app.use(express.json());
-// Mock auth middleware to inject a user
-app.use((req, res, next) => {
-    (req as any).user = { id: 'test-user-id', role: 'user' };
-    (req as any).userId = 'test-user-id';
-    next();
-});
-app.use('/api/v1/documents', documentRoutes);
-
-describe('Document Integration Tests', () => {
-    let user: User;
+describeIfDbAvailable('Document Integration Tests', () => {
+    let app: express.Application;
 
     beforeAll(async () => {
         const ds = await initializeTestDb();
+        if (!ds) {
+            console.warn('Skipping integration tests - database not available');
+            return;
+        }
+
+        // Mock the database config
+        jest.mock('../../config/database', () => ({
+            get AppDataSource() {
+                return getDataSource();
+            },
+        }));
+
+        // Mock config
+        jest.mock('../../config', () => ({
+            jwt: { secret: 'test-secret', expiresIn: '1h' },
+            minio: { endPoint: 'localhost', port: 9000, useSSL: false, accessKey: 'test', secretKey: 'test' },
+        }));
+
+        // Mock MinIO client
+        jest.mock('minio', () => ({
+            Client: jest.fn().mockImplementation(() => ({
+                bucketExists: jest.fn().mockResolvedValue(true),
+                makeBucket: jest.fn().mockResolvedValue(true),
+                putObject: jest.fn().mockResolvedValue({ etag: 'test-etag' }),
+                getObject: jest.fn().mockResolvedValue({
+                    pipe: jest.fn(),
+                    on: jest.fn(),
+                }),
+                removeObject: jest.fn().mockResolvedValue(true),
+            })),
+        }));
+
+        // Mock Neo4j driver
+        jest.mock('neo4j-driver', () => ({
+            driver: jest.fn().mockReturnValue({
+                session: jest.fn().mockReturnValue({
+                    run: jest.fn().mockResolvedValue({ records: [] }),
+                    close: jest.fn(),
+                }),
+                close: jest.fn(),
+            }),
+            auth: { basic: jest.fn() },
+        }));
+
+        // Mock Qdrant client
+        jest.mock('@qdrant/js-client-rest', () => ({
+            QdrantClient: jest.fn().mockImplementation(() => ({
+                getCollections: jest.fn().mockResolvedValue({ collections: [] }),
+                createCollection: jest.fn().mockResolvedValue(true),
+                upsert: jest.fn().mockResolvedValue(true),
+                search: jest.fn().mockResolvedValue([]),
+            })),
+        }));
+
+        const { User, UserRole } = require('../../models/User');
+        const documentRoutes = require('../../routes/documents').default;
+        
+        app = express();
+        app.use(express.json());
+        // Mock auth middleware to inject a user
+        app.use((req, res, next) => {
+            (req as any).user = { id: 'test-user-id', role: 'user' };
+            (req as any).userId = 'test-user-id';
+            next();
+        });
+        app.use('/api/v1/documents', documentRoutes);
+
         // Create a test user
-        user = ds.getRepository(User).create({
+        const user = ds.getRepository(User).create({
             id: 'test-user-id',
             email: 'test@example.com',
             passwordHash: 'hash',

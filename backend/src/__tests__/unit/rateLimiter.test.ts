@@ -39,6 +39,8 @@ describe('Rate Limiter Middleware Unit Tests', () => {
                 ip: '127.0.0.1',
                 method: 'GET',
                 path: '/test',
+                headers: {},
+                get: jest.fn().mockReturnValue(undefined),
             };
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -49,8 +51,17 @@ describe('Rate Limiter Middleware Unit Tests', () => {
             mockNext = jest.fn();
         });
 
-        it('should set rate limit headers on requests', () => {
-            standardLimiter(mockRequest as Request, mockResponse as Response, mockNext);
+        it('should set rate limit headers on requests', async () => {
+            // The rate limiter is async, so we need to properly await it
+            await new Promise<void>((resolve) => {
+                const next = () => {
+                    mockNext();
+                    resolve();
+                };
+                standardLimiter(mockRequest as Request, mockResponse as Response, next);
+                // Give it a moment to complete if it doesn't immediately call next
+                setTimeout(() => resolve(), 100);
+            });
 
             // Rate limiters should set headers
             // Note: Actual header setting happens in the library
