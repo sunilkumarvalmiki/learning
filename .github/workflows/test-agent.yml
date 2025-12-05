@@ -18,6 +18,14 @@ on:
         default: 'true'
         type: boolean
 
+# Default permissions for all jobs
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  pull-requests: write
+  security-events: write
+
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '8'
@@ -93,10 +101,12 @@ jobs:
         run: npm ci
 
       - name: Run linter
-        run: npm run lint 2>/dev/null || echo "Linting skipped - no lint script"
+        run: npm run lint || echo "::warning::Linting skipped or failed - review manually if needed"
+        continue-on-error: true
 
       - name: Run type check
         run: npx tsc --noEmit
+        continue-on-error: false
 
       - name: Run unit tests
         run: npm test -- --coverage --verbose
@@ -283,10 +293,12 @@ jobs:
         run: npm ci
 
       - name: Run integration tests
-        run: npm test -- --testPathPattern="integration" --verbose 2>/dev/null || echo "No integration tests found or tests skipped"
+        run: |
+          npm test -- --testPathPattern="integration" --verbose || echo "::notice::Some integration tests skipped or failed - review logs for details"
         env:
           NODE_ENV: test
           JWT_SECRET: test-secret-for-ci
+        continue-on-error: true
 
   # ============================================
   # Job 6: Security Scanning

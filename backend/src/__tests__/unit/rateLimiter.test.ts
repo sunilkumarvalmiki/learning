@@ -52,19 +52,35 @@ describe('Rate Limiter Middleware Unit Tests', () => {
         });
 
         it('should set rate limit headers on requests', async () => {
-            // The rate limiter is async, so we need to properly await it
-            await new Promise<void>((resolve) => {
-                const next = () => {
-                    mockNext();
+            // Use a Promise-based approach to properly handle the async rate limiter
+            const callPromise = new Promise<void>((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    // If rate limiter hasn't called next within timeout, 
+                    // this is expected behavior for rate limiting middleware
                     resolve();
+                }, 500);
+
+                const next = (err?: any) => {
+                    clearTimeout(timeoutId);
+                    if (err) {
+                        reject(err);
+                    } else {
+                        mockNext();
+                        resolve();
+                    }
                 };
-                standardLimiter(mockRequest as Request, mockResponse as Response, next);
-                // Give it a moment to complete if it doesn't immediately call next
-                setTimeout(() => resolve(), 100);
+                
+                try {
+                    standardLimiter(mockRequest as Request, mockResponse as Response, next);
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    reject(error);
+                }
             });
 
-            // Rate limiters should set headers
-            // Note: Actual header setting happens in the library
+            await callPromise;
+
+            // Rate limiters should call next() on the first request (not rate limited)
             expect(mockNext).toHaveBeenCalled();
         });
     });

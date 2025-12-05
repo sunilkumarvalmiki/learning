@@ -656,9 +656,16 @@ it('should handle concurrent requests', async () => {
 
 ## Resources
 
-- [MCP Specification](https://modelcontextprotocol.io/specification)
-- [MCP SDK Documentation](https://modelcontextprotocol.io/sdk)
-- [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification)
+### Official Documentation
+- [MCP Specification](https://modelcontextprotocol.io/specification) - Official protocol specification (accessed December 2025)
+- [MCP SDK Documentation](https://modelcontextprotocol.io/sdk) - Official SDK for TypeScript/JavaScript
+- [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) - JSON-RPC 2.0 protocol (stable specification)
+
+### Alternative Resources
+If the above resources become unavailable:
+- MCP protocol details are often documented in AI assistant documentation
+- JSON-RPC 2.0 is a stable specification with many alternative reference implementations
+- Search for "Model Context Protocol" in the GitHub repository for @modelcontextprotocol
 
 ---
 
